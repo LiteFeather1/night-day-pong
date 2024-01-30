@@ -8,7 +8,6 @@ extends Node2D
 @export var background_colour: Color
 
 @export var force: float = 10.0
-@export var game_scale: Vector2 = Vector2(.5, .5)
 
 @export var ball_scene: PackedScene = preload("res://scenes/ball.tscn")
 
@@ -25,8 +24,8 @@ func _ready() -> void:
 	RenderingServer.set_default_clear_color(background_colour)
 	
 	# set camera pos
-	var center_x = collums * BLOCK_SIZE * game_scale.x
-	var center_y: float = rows * BLOCK_SIZE * game_scale.y  * .5
+	var center_x = collums * BLOCK_SIZE
+	var center_y: float = rows * BLOCK_SIZE * .5
 	camera_2d.position = Vector2(center_x, center_y)
 	
 	# init block positions
@@ -39,9 +38,8 @@ func _ready() -> void:
 			for player in 2:
 				var block: Block = block_scene.instantiate()
 				var player_offset = player * center_x
-				var x_pos = x * BLOCK_SIZE * game_scale.x + player_offset
-				block.scale = game_scale
-				block.position = Vector2(x_pos, y * BLOCK_SIZE * game_scale.y)
+				var x_pos = x * BLOCK_SIZE + player_offset
+				block.position = Vector2(x_pos, y * BLOCK_SIZE)
 				block.set_line(line_colour)
 				block.set_layer(player, colours[colours.size() - player - 1])
 				block.name = str(player)
@@ -77,7 +75,6 @@ func _ready() -> void:
 func spawn_ball(index: int,pos: Vector2) -> void:
 		var ball: Ball = ball_scene.instantiate()
 		ball.set_id(index, colours[index])
-		ball.scale = game_scale
 		ball.position = pos
 		root.add_child.call_deferred(ball)
 		var f = force if index % 2 == 0 else -force

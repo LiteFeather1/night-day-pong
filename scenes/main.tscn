@@ -17,8 +17,8 @@ colours = Array[Color]([Color(0.317647, 0.356863, 0.529412, 1), Color(0.780392, 
 line_colour = Color(1, 1, 1, 0.498039)
 background_colour = Color(0.117647, 0.117647, 0.117647, 1)
 force = 1024.0
-collums = 5
-rows = 10
+collums = 4
+rows = 4
 edge_colliders = [NodePath("edge_collider/collision_shape_top"), NodePath("edge_collider/collision_shape_right"), NodePath("edge_collider/collision_shape_bot"), NodePath("edge_collider/collision_shape_left")]
 
 [node name="edge_collider" type="StaticBody2D" parent="."]

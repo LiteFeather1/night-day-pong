@@ -8,6 +8,7 @@ signal hit(block: Block)
 
 var prev_layer: int
 
+
 func set_line(colour: Color) -> void:
 	sprite_line.modulate = colour
 
