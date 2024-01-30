@@ -1,0 +1,34 @@
+[gd_scene load_steps=4 format=3 uid="uid://dlcorhedtop3s"]
+
+[ext_resource type="Script" path="res://scenes/main.gd" id="1_w6ri1"]
+[ext_resource type="PackedScene" uid="uid://bvl3a27tn78cx" path="res://scenes/block.tscn" id="2_vabde"]
+
+[sub_resource type="SegmentShape2D" id="SegmentShape2D_n0c5i"]
+
+[node name="Main" type="Node2D" node_paths=PackedStringArray("edge_colliders")]
+script = ExtResource("1_w6ri1")
+colours = Array[Color]([Color(0.164706, 0.164706, 0.164706, 1), Color(0.713726, 0.713726, 0.713726, 1)])
+edge_colliders = [NodePath("edge_collider/collision_shape_top"), NodePath("edge_collider/collision_shape_right"), NodePath("edge_collider/collision_shape_bot"), NodePath("edge_collider/collision_shape_left")]
+
+[node name="edge_collider" type="Area2D" parent="."]
+collision_layer = 3
+collision_mask = 3
+
+[node name="collision_shape_top" type="CollisionShape2D" parent="edge_collider"]
+position = Vector2(0, 1)
+shape = SubResource("SegmentShape2D_n0c5i")
+
+[node name="collision_shape_right" type="CollisionShape2D" parent="edge_collider"]
+position = Vector2(0, 1)
+shape = SubResource("SegmentShape2D_n0c5i")
+
+[node name="collision_shape_bot" type="CollisionShape2D" parent="edge_collider"]
+shape = SubResource("SegmentShape2D_n0c5i")
+
+[node name="collision_shape_left" type="CollisionShape2D" parent="edge_collider"]
+shape = SubResource("SegmentShape2D_n0c5i")
+
+[node name="Block" parent="." instance=ExtResource("2_vabde")]
+
+[node name="Block2" parent="." node_paths=PackedStringArray("sprite") instance=ExtResource("2_vabde")]
+sprite = NodePath("../Block/Sprite")
