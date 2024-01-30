@@ -3,20 +3,25 @@ extends Node2D
 @onready var root: Window = get_tree().get_root()
 @export var camera_2d: Camera2D
 
+# colours
 @export var colours: Array[Color]
 @export var line_colour: Color
 @export var background_colour: Color
 
-@export var force: float = 10.0
-
-@export var ball_scene: PackedScene = preload("res://scenes/ball.tscn")
-
-const BLOCK_SIZE: int = 128
-@export var block_scene: PackedScene = preload("res://scenes/block.tscn")
+# game
 @export var collums: int = 1
 @export var rows: int = 1
-
 @export var edge_colliders: Array[CollisionShape2D]
+
+# ball
+@export var ball_scene: PackedScene = preload("res://scenes/ball.tscn")
+@export var ball_start_force: float = 1024
+@export var ball_scale: float = 1.0
+
+# block
+@export var block_scene: PackedScene = preload("res://scenes/block.tscn")
+@export var block_scale: float = 1.0
+const BLOCK_SIZE: int = 128
 
 
 func _ready() -> void:
@@ -40,6 +45,7 @@ func _ready() -> void:
 				var player_offset = player * center_x
 				var x_pos = x * BLOCK_SIZE + player_offset
 				block.position = Vector2(x_pos, y * BLOCK_SIZE)
+				block.scale = Vector2(block_scale, block_scale)
 				block.set_line(line_colour)
 				block.set_layer(player, colours[colours.size() - player - 1])
 				block.name = str(player)
@@ -76,8 +82,9 @@ func spawn_ball(index: int,pos: Vector2) -> void:
 		var ball: Ball = ball_scene.instantiate()
 		ball.set_id(index, colours[index])
 		ball.position = pos
+		ball.scale = Vector2(ball_scale, ball_scale)
 		root.add_child.call_deferred(ball)
-		var f = force if index % 2 == 0 else -force
+		var f = ball_start_force if index % 2 == 0 else -ball_start_force
 		ball.launch(f)
 
 
