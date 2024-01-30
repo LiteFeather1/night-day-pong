@@ -5,6 +5,8 @@ extends Node2D
 
 @export var colours: Array[Color]
 @export var line_colour: Color
+@export var background_colour: Color
+
 @export var force: float = 10.0
 @export var game_scale: Vector2 = Vector2(.5, .5)
 
@@ -19,6 +21,9 @@ const BLOCK_SIZE: int = 128
 
 
 func _ready() -> void:
+	# set clear colour
+	RenderingServer.set_default_clear_color(background_colour)
+	
 	# set camera pos
 	var center_x = collums * BLOCK_SIZE * game_scale.x
 	var center_y: float = rows * BLOCK_SIZE * game_scale.y  * .5
@@ -76,7 +81,7 @@ func spawn_ball(index: int,pos: Vector2) -> void:
 		ball.position = pos
 		root.add_child.call_deferred(ball)
 		var f = force if index % 2 == 0 else -force
-		ball.launch(f *(index + 1))
+		ball.launch(f)
 
 
 func flip_block(block: Block) -> void:
