@@ -4,6 +4,7 @@ extends Node2D
 @export var camera_2d: Camera2D
 
 @export var colours: Array[Color]
+@export var line_colour: Color
 @export var force: float = 10.0
 @export var game_scale: Vector2 = Vector2(.5, .5)
 
@@ -36,6 +37,7 @@ func _ready() -> void:
 				var x_pos = x * BLOCK_SIZE * game_scale.x + player_offset
 				block.scale = game_scale
 				block.position = Vector2(x_pos, y * BLOCK_SIZE * game_scale.y)
+				block.set_line(line_colour)
 				block.set_layer(player, colours[colours.size() - player - 1])
 				block.name = str(player)
 				block.hit.connect(flip_block)
@@ -67,7 +69,7 @@ func _ready() -> void:
 	s_left.b = Vector2.ZERO
 
 
-func spawn_ball(index: int,pos: Vector2):
+func spawn_ball(index: int,pos: Vector2) -> void:
 		var ball: Ball = ball_scene.instantiate()
 		ball.set_id(index, colours[index])
 		ball.scale = game_scale
@@ -77,7 +79,7 @@ func spawn_ball(index: int,pos: Vector2):
 		ball.launch(f *(index + 1))
 
 
-func flip_block(block: Block):
+func flip_block(block: Block) -> void:
 	if block.prev_layer == 3:
 		block.set_layer(1, colours[0])
 	elif block.prev_layer == 4:

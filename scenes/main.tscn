@@ -13,7 +13,8 @@
 [node name="Main" type="Node2D" node_paths=PackedStringArray("camera_2d", "edge_colliders")]
 script = ExtResource("1_w6ri1")
 camera_2d = NodePath("Camera2D")
-colours = Array[Color]([Color(0.164706, 0.164706, 0.164706, 1), Color(0.713726, 0.713726, 0.713726, 1)])
+colours = Array[Color]([Color(0.317647, 0.356863, 0.529412, 1), Color(0.780392, 0.611765, 0.356863, 1)])
+line_colour = Color(0.160784, 0.160784, 0.160784, 0)
 force = 1024.0
 collums = 5
 rows = 10
