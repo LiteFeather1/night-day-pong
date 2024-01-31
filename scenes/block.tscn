@@ -14,17 +14,14 @@ sprite_line = NodePath("sprite_line")
 sprite_block = NodePath("sprite_block")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(64, 64)
 shape = SubResource("RectangleShape2D_q7s7o")
 
 [node name="sprite_line" type="Sprite2D" parent="."]
 light_mask = 5
-position = Vector2(64, 64)
 texture = ExtResource("2_hd17b")
 
 [node name="sprite_block" type="Sprite2D" parent="."]
 modulate = Color(0.0392157, 0.0392157, 0.0392157, 1)
 light_mask = 5
-position = Vector2(64, 64)
 scale = Vector2(0.98, 0.98)
 texture = ExtResource("2_hd17b")

@@ -5,12 +5,12 @@ extends Node2D
 
 # colours
 @export var colours: Array[Color]
-@export var line_colour: Color
-@export var background_colour: Color
+@export var line_colour: Color = Color("ffffff7f")
+@export var background_colour: Color = Color("1e1e1e")
 
 # game
-@export var collums: int = 1
-@export var rows: int = 1
+@export var collums: int = 4
+@export var rows: int = 4
 @export var edge_colliders: Array[CollisionShape2D]
 
 # ball
@@ -21,7 +21,9 @@ extends Node2D
 # block
 @export var block_scene: PackedScene = preload("res://scenes/block.tscn")
 @export var block_scale: float = 1.0
+@export var scale_position: bool = false
 const BLOCK_SIZE: int = 128
+const HALF_BLOCK_SIZE: int = 64
 
 
 func _ready() -> void:
@@ -29,8 +31,9 @@ func _ready() -> void:
 	RenderingServer.set_default_clear_color(background_colour)
 	
 	# set camera pos
-	var center_x = collums * BLOCK_SIZE
-	var center_y: float = rows * BLOCK_SIZE * .5
+	var scale_pos = 1.0 if !scale_position else block_scale
+	var center_x = collums * BLOCK_SIZE * scale_pos
+	var center_y = rows * BLOCK_SIZE * .5 * scale_pos
 	camera_2d.position = Vector2(center_x, center_y)
 	
 	# init block positions
@@ -42,9 +45,9 @@ func _ready() -> void:
 		for y in rows:
 			for player in 2:
 				var block: Block = block_scene.instantiate()
-				var player_offset = player * center_x
-				var x_pos = x * BLOCK_SIZE + player_offset
-				block.position = Vector2(x_pos, y * BLOCK_SIZE)
+				var player_offset = player * center_x + HALF_BLOCK_SIZE * scale_pos
+				var x_pos = x * BLOCK_SIZE * scale_pos + player_offset
+				block.position = Vector2(x_pos, y * BLOCK_SIZE * scale_pos + HALF_BLOCK_SIZE * scale_pos)
 				block.scale = Vector2(block_scale, block_scale)
 				block.set_line(line_colour)
 				block.set_layer(player, colours[colours.size() - player - 1])
