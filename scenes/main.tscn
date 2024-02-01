@@ -13,10 +13,10 @@
 [node name="Main" type="Node2D" node_paths=PackedStringArray("camera_2d", "edge_colliders")]
 script = ExtResource("1_w6ri1")
 camera_2d = NodePath("Camera2D")
-colours = Array[Color]([Color(0.317647, 0.356863, 0.529412, 1), Color(0.780392, 0.611765, 0.356863, 1)])
+edge_colliders = [NodePath("edge_collider/collision_shape_top"), NodePath("edge_collider/collision_shape_right"), NodePath("edge_collider/collision_shape_bot"), NodePath("edge_collider/collision_shape_left")]
 collums = 8
 rows = 8
-edge_colliders = [NodePath("edge_collider/collision_shape_top"), NodePath("edge_collider/collision_shape_right"), NodePath("edge_collider/collision_shape_bot"), NodePath("edge_collider/collision_shape_left")]
+colours = Array[Color]([Color(0.317647, 0.356863, 0.529412, 1), Color(0.780392, 0.611765, 0.356863, 1)])
 ball_start_force = 2048.0
 
 [node name="edge_collider" type="StaticBody2D" parent="."]
