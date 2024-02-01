@@ -26,3 +26,4 @@ func set_id(id: int, c: Color) -> void:
 
 func launch(force: Vector2) -> void:
 	velocity = force 
+

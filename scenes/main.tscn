@@ -17,7 +17,7 @@ edge_colliders = [NodePath("edge_collider/collision_shape_top"), NodePath("edge_
 collums = 8
 rows = 8
 colours = Array[Color]([Color(0.317647, 0.356863, 0.529412, 1), Color(0.780392, 0.611765, 0.356863, 1)])
-ball_start_force = 2048.0
+ball_scale = 0.5
 
 [node name="edge_collider" type="StaticBody2D" parent="."]
 collision_layer = 15

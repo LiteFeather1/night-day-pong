@@ -17,8 +17,9 @@ extends Node2D
 
 @export_group("Ball Settings")
 const ball_scene: PackedScene = preload("res://scenes/ball.tscn")
-@export var ball_start_force: float = 1024
-@export var ball_scale: float = 1.0
+@export var ball_amount: int = 1
+@export var ball_start_force: float = 2048
+@export var ball_scale: float = .05
 
 @export_group("Block Settings")
 const block_scene: PackedScene = preload("res://scenes/block.tscn")
@@ -57,10 +58,32 @@ func _ready() -> void:
 				block.hit.connect(flip_block)
 				block_parents[player].add_child.call_deferred(block)
 	
-	# set players
-	const x_padding = 128.0
-	spawn_ball(0, Vector2(x_padding, center_y))
-	spawn_ball(1, Vector2(center_x * 2.0 - x_padding, center_y))
+	# set balls
+	var ball_padding = BLOCK_SIZE * ball_scale * 2.0
+	var nearest_sqrt = pow(ceil(sqrt(ball_amount)), 2.0)
+	var amount_per_col = int(sqrt(nearest_sqrt))
+	var remainder = ball_amount % amount_per_col
+	var amount_of_rows = floori(float(ball_amount) / amount_per_col)
+	var center_x_1 = center_x * 0.5
+	var min_x_1 = center_x_1 - ((amount_per_col - 1) / 2.0 * ball_padding)
+	var min_y = center_y + ((amount_of_rows - 1) / 2.0 * ball_padding)
+	
+	if remainder > 0:
+		min_y += ball_padding * .5
+	
+	for x in amount_per_col:
+		for y in amount_of_rows:
+			var x_pos = min_x_1 + (ball_padding * x)
+			var y_pos = min_y - (ball_padding * y)
+			spawn_ball(0, Vector2(x_pos, y_pos))
+			spawn_ball(1, Vector2(x_pos + center_x, y_pos))
+	
+	var x_max_2 = min_x_1 + (ball_padding * remainder) + center_x
+	for r in remainder:
+		var x_pos = min_x_1 + (ball_padding * r)
+		var y_pos = min_y - (ball_padding * amount_of_rows)
+		spawn_ball(0, Vector2(x_pos, y_pos))
+		spawn_ball(1, Vector2(x_max_2 - (ball_padding * r), y_pos))
 	
 	# set edge colliders
 	var top_right = Vector2(center_x * 2.0, 0.0)
@@ -89,7 +112,7 @@ func spawn_ball(index: int,pos: Vector2) -> void:
 	ball.position = pos
 	ball.scale = Vector2(ball_scale, ball_scale)
 	root.add_child.call_deferred(ball)
-	ball.launch(random_inside_unit_circle() * ball_start_force)
+	ball.launch(random_inside_unit_circle().normalized() * ball_start_force)
 
 
 func random_inside_unit_circle() -> Vector2:
