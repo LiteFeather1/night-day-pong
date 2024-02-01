@@ -82,13 +82,17 @@ func _ready() -> void:
 
 
 func spawn_ball(index: int,pos: Vector2) -> void:
-		var ball: Ball = ball_scene.instantiate()
-		ball.set_id(index, colours[index])
-		ball.position = pos
-		ball.scale = Vector2(ball_scale, ball_scale)
-		root.add_child.call_deferred(ball)
-		var f = ball_start_force if index % 2 == 0 else -ball_start_force
-		ball.launch(f)
+	var ball: Ball = ball_scene.instantiate()
+	ball.set_id(index, colours[index])
+	ball.position = pos
+	ball.scale = Vector2(ball_scale, ball_scale)
+	root.add_child.call_deferred(ball)
+	ball.launch(random_inside_unit_circle() * ball_start_force)
+
+
+func random_inside_unit_circle() -> Vector2:
+	var theta = randf() * 2.0 * PI
+	return Vector2(cos(theta), sin(theta)) * sqrt(randf())
 
 
 func flip_block(block: Block) -> void:
