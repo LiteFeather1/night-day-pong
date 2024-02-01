@@ -17,7 +17,10 @@ func _process(delta: float) -> void:
 
 func set_id(id: int, c: Color) -> void:
 	set_collision_layer_value(id + 1, true)
+	
+	set_collision_mask_value(id + 1, true)
 	set_collision_mask_value(4 - id, true)
+	
 	sprite_2d.modulate = c
 
 
