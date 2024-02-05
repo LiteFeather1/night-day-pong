@@ -1,6 +1,7 @@
-[gd_scene load_steps=6 format=3 uid="uid://dlcorhedtop3s"]
+[gd_scene load_steps=7 format=3 uid="uid://dlcorhedtop3s"]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_w6ri1"]
+[ext_resource type="Gradient" uid="uid://cdewtxtnf6wbp" path="res://resources/gradient_ball_trail.tres" id="2_pmfab"]
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_b1hlo"]
 
@@ -17,7 +18,7 @@ edge_colliders = [NodePath("edge_collider/collision_shape_top"), NodePath("edge_
 collums = 8
 rows = 8
 colours = Array[Color]([Color(0.317647, 0.356863, 0.529412, 1), Color(0.780392, 0.611765, 0.356863, 1)])
-ball_scale = 0.5
+gradient_ball_trail = ExtResource("2_pmfab")
 
 [node name="edge_collider" type="StaticBody2D" parent="."]
 collision_layer = 15

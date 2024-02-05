@@ -1,12 +1,13 @@
-[gd_scene load_steps=4 format=3 uid="uid://cocaj0cr7d1f6"]
+[gd_scene load_steps=5 format=3 uid="uid://cocaj0cr7d1f6"]
 
 [ext_resource type="Script" path="res://scenes/ball.gd" id="1_6qdd2"]
 [ext_resource type="Texture2D" uid="uid://xaq5kutl6vb3" path="res://Sprites/Ellipse_128.png" id="2_o7l0l"]
+[ext_resource type="PackedScene" uid="uid://dhkyrwsb80sel" path="res://scenes/trail.tscn" id="3_mfpsi"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_onjxi"]
 radius = 64.0
 
-[node name="Ball" type="CharacterBody2D" node_paths=PackedStringArray("sprite_2d")]
+[node name="Ball" type="CharacterBody2D" node_paths=PackedStringArray("sprite_2d", "trail")]
 collision_layer = 0
 collision_mask = 0
 motion_mode = 1
@@ -14,10 +15,14 @@ platform_on_leave = 2
 platform_floor_layers = 4294901760
 script = ExtResource("1_6qdd2")
 sprite_2d = NodePath("Sprite2D")
+trail = NodePath("Trail")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_onjxi")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+visible = false
 z_index = 100
 texture = ExtResource("2_o7l0l")
+
+[node name="Trail" parent="." instance=ExtResource("3_mfpsi")]

@@ -5,6 +5,7 @@ extends CharacterBody2D
 signal on_hit(hit_point: Vector2, normal: Vector2, colour: Color)
 
 @export var sprite_2d: Sprite2D
+@export var trail: Trail
 
 
 func _process(delta: float) -> void:
@@ -20,6 +21,11 @@ func _process(delta: float) -> void:
 		if block:
 			block.flip()
 
+func set_pos_scale(pos: Vector2, scal: float) -> void:
+	position = pos
+	scale = Vector2(scal, scal)
+	trail.width *= scal
+
 
 func set_id(id: int, c: Color) -> void:
 	set_collision_layer_value(id + 1, true)
@@ -30,6 +36,9 @@ func set_id(id: int, c: Color) -> void:
 	sprite_2d.modulate = c
 
 
+func set_trail_gradient(g: Gradient) -> void:
+	trail.set_gradient(g)
+
+
 func launch(force: Vector2) -> void:
 	velocity = force 
-

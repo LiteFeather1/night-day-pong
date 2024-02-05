@@ -19,10 +19,14 @@ extends Node2D
 const ball_scene: PackedScene = preload("res://scenes/ball.tscn")
 @export var ball_amount: int = 1
 @export var ball_start_force: float = 2048
-@export var ball_scale: float = .05
+@export var ball_scale: float = .5
 
+@export var show_hit_particle: bool = true
 const BALL_HIT_PARTICLE = preload("res://scenes/ball_hit_particle.tscn")
 var ball_hit_particles: Array[BallHitParticle]
+
+@export var gradient_ball_trail: Gradient
+var trail_gradients: Array[Gradient]
 
 @export_group("Block Settings")
 const block_scene: PackedScene = preload("res://scenes/block.tscn")
@@ -35,6 +39,15 @@ const HALF_BLOCK_SIZE: int = 64
 func _ready() -> void:
 	# set clear colour
 	RenderingServer.set_default_clear_color(background_colour)
+	
+	# set trail gradients
+	for i in 2:
+		var g: Gradient = gradient_ball_trail.duplicate()
+		var c = colours[i]
+		c.a = 0
+		g.set_color(0, c)
+		g.set_color(1, colours[i])
+		trail_gradients.append(g)
 	
 	# set camera pos
 	var scale_pos = 1.0 if !scale_position else block_scale
@@ -117,17 +130,20 @@ func _ready() -> void:
 	s_left.b = Vector2.ZERO
 
 
-func spawn_ball(index: int,pos: Vector2) -> void:
+func spawn_ball(index: int, pos: Vector2) -> void:
 	var ball: Ball = ball_scene.instantiate()
 	ball.set_id(index, colours[index])
-	ball.position = pos
-	ball.scale = Vector2(ball_scale, ball_scale)
+	ball.set_trail_gradient(trail_gradients[index])
+	ball.set_pos_scale(pos, ball_scale)
 	ball.on_hit.connect(on_ball_hit)
 	ball.launch(random_inside_unit_circle().normalized() * ball_start_force)
 	root.add_child.call_deferred(ball)
 
 
 func on_ball_hit(hit_point: Vector2, normal: Vector2, colour: Color):
+	if !show_hit_particle:
+		return
+	
 	if ball_hit_particles.size() == 0:
 		spawn_ball_hit_particle()
 	
