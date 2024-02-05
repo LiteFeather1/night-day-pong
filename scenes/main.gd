@@ -1,5 +1,5 @@
 extends Node2D
-
+ 
 @onready var root: Window = get_tree().get_root()
 
 @export_group("Nodes")
@@ -20,6 +20,9 @@ const ball_scene: PackedScene = preload("res://scenes/ball.tscn")
 @export var ball_amount: int = 1
 @export var ball_start_force: float = 2048
 @export var ball_scale: float = .05
+
+const BALL_HIT_PARTICLE = preload("res://scenes/ball_hit_particle.tscn")
+var ball_hit_particles: Array[BallHitParticle]
 
 @export_group("Block Settings")
 const block_scene: PackedScene = preload("res://scenes/block.tscn")
@@ -61,9 +64,13 @@ func _ready() -> void:
 	# set balls
 	var ball_padding = BLOCK_SIZE * ball_scale * 2.0
 	var nearest_sqrt = pow(ceil(sqrt(ball_amount)), 2.0)
-	var amount_per_col = int(sqrt(nearest_sqrt))
+	# TODO: in the future it would be nice to have a grid that is not just squared,
+	# One that respects the size of the ball area (collums & rows)
+	var amount_of_colls = int(sqrt(nearest_sqrt))
+	var amount_per_col = amount_of_colls
 	var remainder = ball_amount % amount_per_col
 	var amount_of_rows = floori(float(ball_amount) / amount_per_col)
+	
 	var center_x_1 = center_x * 0.5
 	var min_x_1 = center_x_1 - ((amount_per_col - 1) / 2.0 * ball_padding)
 	var min_y = center_y + ((amount_of_rows - 1) / 2.0 * ball_padding)
@@ -84,6 +91,10 @@ func _ready() -> void:
 		var y_pos = min_y - (ball_padding * amount_of_rows)
 		spawn_ball(0, Vector2(x_pos, y_pos))
 		spawn_ball(1, Vector2(x_max_2 - (ball_padding * r), y_pos))
+	
+	# Spawn ball hit particles
+	for i in 11:
+		spawn_ball_hit_particle();
 	
 	# set edge colliders
 	var top_right = Vector2(center_x * 2.0, 0.0)
@@ -111,8 +122,31 @@ func spawn_ball(index: int,pos: Vector2) -> void:
 	ball.set_id(index, colours[index])
 	ball.position = pos
 	ball.scale = Vector2(ball_scale, ball_scale)
-	root.add_child.call_deferred(ball)
+	ball.on_hit.connect(on_ball_hit)
 	ball.launch(random_inside_unit_circle().normalized() * ball_start_force)
+	root.add_child.call_deferred(ball)
+
+
+func on_ball_hit(hit_point: Vector2, normal: Vector2, colour: Color):
+	if ball_hit_particles.size() == 0:
+		spawn_ball_hit_particle()
+	
+	var particle: BallHitParticle = ball_hit_particles.pop_front()
+	particle.position = hit_point
+	particle.direction = normal
+	particle.color = colour
+	particle.emitting = true
+
+
+func spawn_ball_hit_particle():
+	var particle: BallHitParticle = BALL_HIT_PARTICLE.instantiate()
+	particle.finished_playing.connect(return_ball_hit_particle)
+	ball_hit_particles.append(particle)
+	root.add_child.call_deferred(particle)
+
+
+func return_ball_hit_particle(particle: BallHitParticle):
+	ball_hit_particles.append(particle)
 
 
 func random_inside_unit_circle() -> Vector2:
