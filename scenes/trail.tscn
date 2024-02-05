@@ -18,4 +18,3 @@ begin_cap_mode = 2
 end_cap_mode = 2
 antialiased = true
 script = ExtResource("1_fmkc4")
-max_point_count = 64

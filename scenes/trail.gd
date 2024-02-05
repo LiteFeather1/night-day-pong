@@ -2,7 +2,7 @@ class_name Trail
 extends Line2D
 
 
-@export var max_point_count = 50
+@export var max_point_count = 64
 
 
 func  _process(_delta: float) -> void:
