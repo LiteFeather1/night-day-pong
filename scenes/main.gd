@@ -2,8 +2,13 @@ extends Node2D
  
 @onready var root: Window = get_tree().get_root()
 
-@export_group("Nodes")
+@export_group("Camera")
 @export var camera_2d: Camera2D
+@export_range(0.0, 1.0) var sides_padding_percent: float = .5
+@export_range(0.0, 1.0) var tops_padding_percent: float = .33
+@export_range(0.0, 1.0) var top_offset_percent: float = .1
+
+@export_group("Nodes")
 @export var edge_colliders: Array[CollisionShape2D]
 
 @export_group("Game Settings")
@@ -49,11 +54,22 @@ func _ready() -> void:
 		g.set_color(1, colours[i])
 		trail_gradients.append(g)
 	
-	# set camera pos
 	var scale_pos = 1.0 if !scale_position else block_scale
 	var center_x = collums * BLOCK_SIZE * scale_pos
 	var center_y = rows * BLOCK_SIZE * 0.5 * scale_pos
-	camera_2d.position = Vector2(center_x, center_y)
+	
+	# camera zoom
+	var block_width = center_x * 2.0
+	var block_height = center_y * 2.0
+	var viewport = get_viewport().size
+	var zoom_x = viewport.x / (block_width * (sides_padding_percent + 1))
+	var zoom_y = viewport.y / (block_height * (tops_padding_percent + 1)) 
+	var zoom = zoom_x if zoom_y > zoom_x else zoom_y
+	camera_2d.zoom = Vector2(zoom, zoom)
+	
+	# set camera pos
+	var camera_pos_y = center_y
+	camera_2d.position = Vector2(center_x, camera_pos_y)
 	
 	# init block positions
 	var block_parents: Array[Node] = [Node.new(), Node.new()]
@@ -110,17 +126,17 @@ func _ready() -> void:
 		spawn_ball_hit_particle();
 	
 	# set edge colliders
-	var top_right = Vector2(center_x * 2.0, 0.0)
+	var top_right = Vector2(block_width, 0.0)
 	var s_top = edge_colliders[0].shape as SegmentShape2D
 	s_top.a = Vector2.ZERO
 	s_top.b = top_right
 	
-	var bot_right = Vector2(center_x * 2.0, center_y * 2.0)
+	var bot_right = Vector2(block_width, block_height)
 	var s_right = edge_colliders[1].shape as SegmentShape2D
 	s_right.a = top_right
 	s_right.b = bot_right
 	
-	var bot_left = Vector2(0, center_y * 2.0)
+	var bot_left = Vector2(0, block_height)
 	var s_bot = edge_colliders[2].shape as SegmentShape2D
 	s_bot.a = bot_right
 	s_bot.b = bot_left
@@ -128,6 +144,13 @@ func _ready() -> void:
 	var s_left = edge_colliders[3].shape as SegmentShape2D
 	s_left.a = bot_left
 	s_left.b = Vector2.ZERO
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("screenshot"):
+		var image = get_viewport().get_texture().get_image()
+		var path = "Screenshots/screenshot_%s.png" % Time.get_datetime_string_from_system().replace("-", "_").replace(":", "_").replace("T", "_")
+		image.save_png(path)
 
 
 func spawn_ball(index: int, pos: Vector2) -> void:
