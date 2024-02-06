@@ -6,7 +6,7 @@ extends Node2D
 @export var camera_2d: Camera2D
 @export_range(0.0, 1.0) var sides_padding_percent: float = .5
 @export_range(0.0, 1.0) var tops_padding_percent: float = .33
-@export_range(0.0, 1.0) var top_offset_percent: float = .1
+@export var camera_offset_y: float = 48
 
 @export_group("Nodes")
 @export var edge_colliders: Array[CollisionShape2D]
@@ -63,12 +63,13 @@ func _ready() -> void:
 	var block_height = center_y * 2.0
 	var viewport = get_viewport().size
 	var zoom_x = viewport.x / (block_width * (sides_padding_percent + 1))
-	var zoom_y = viewport.y / (block_height * (tops_padding_percent + 1)) 
+	var size_y = block_height * (tops_padding_percent + 1)
+	var zoom_y = viewport.y / size_y
 	var zoom = zoom_x if zoom_y > zoom_x else zoom_y
 	camera_2d.zoom = Vector2(zoom, zoom)
 	
-	# set camera pos
-	var camera_pos_y = center_y
+	# set camera posS
+	var camera_pos_y = center_y + (camera_offset_y / zoom)
 	camera_2d.position = Vector2(center_x, camera_pos_y)
 	
 	# init block positions
