@@ -5,9 +5,10 @@
 [sub_resource type="FontVariation" id="FontVariation_f2thi"]
 spacing_glyph = 2
 
-[node name="MainUI" type="CanvasLayer" node_paths=PackedStringArray("l_time")]
+[node name="MainUI" type="CanvasLayer" node_paths=PackedStringArray("l_time", "l_scores")]
 script = ExtResource("1_uqk28")
 l_time = NodePath("VBoxContainer/HBoxContainer/ColorRect/l_timer")
+l_scores = [NodePath("VBoxContainer2/HBoxContainer/ColorRect/l_score_1"), NodePath("VBoxContainer2/HBoxContainer/ColorRect2/l_score_2")]
 
 [node name="VBoxContainer" type="VBoxContainer" parent="."]
 anchors_preset = 15
@@ -22,7 +23,7 @@ layout_mode = 2
 theme_override_constants/separation = 16
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 alignment = 1
 
@@ -54,13 +55,13 @@ grow_vertical = 2
 alignment = 2
 
 [node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer2"]
-custom_minimum_size = Vector2(0, 32)
+custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 theme_override_constants/separation = 32
 alignment = 1
 
 [node name="ColorRect" type="ColorRect" parent="VBoxContainer2/HBoxContainer"]
-custom_minimum_size = Vector2(48, 0)
+custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 color = Color(0.180392, 0.180392, 0.180392, 1)
 
@@ -75,6 +76,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = SubResource("FontVariation_f2thi")
+theme_override_font_sizes/font_size = 24
 text = "000
 "
 horizontal_alignment = 1
@@ -82,7 +84,7 @@ vertical_alignment = 1
 clip_text = true
 
 [node name="ColorRect2" type="ColorRect" parent="VBoxContainer2/HBoxContainer"]
-custom_minimum_size = Vector2(48, 0)
+custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 color = Color(0.180392, 0.180392, 0.180392, 1)
 
@@ -95,6 +97,7 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
 theme_override_fonts/font = SubResource("FontVariation_f2thi")
+theme_override_font_sizes/font_size = 24
 text = "000
 "
 horizontal_alignment = 1

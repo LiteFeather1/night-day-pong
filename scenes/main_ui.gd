@@ -6,6 +6,7 @@ extends CanvasLayer
 @export var l_time: Label
 
 @export_category("Scores")
+# TODO consider colouring the label with the same colour of the balls
 @export var l_scores: Array[Label]
 
 
@@ -14,4 +15,4 @@ func set_time(time: float) -> void:
 
 
 func set_score(index: int, score: int) -> void:
-	l_scores[index].set_text("%s" % score)
+	l_scores[index].set_text("%d" % score)

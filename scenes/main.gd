@@ -36,12 +36,14 @@ var trail_gradients: Array[Gradient]
 
 @export_group("Block Settings")
 const block_scene: PackedScene = preload("res://scenes/block.tscn")
+var all_blocks: Array[Array] = [[], []]
 @export var block_scale: float = 1.0
 @export var scale_position: bool = false
 const BLOCK_SIZE: int = 128
 const HALF_BLOCK_SIZE: int = 64
 
 var elapsed_time: float = 0.0
+
 
 func _ready() -> void:
 	# set clear colourt
@@ -58,6 +60,8 @@ func _ready() -> void:
 		trail_gradients.append(g)
 		
 		root.add_child.call_deferred(block_parents[i])
+		
+		main_ui.set_score(i, collums * rows)
 	
 	var scale_pos = 1.0 if !scale_position else block_scale
 	var center_x = collums * BLOCK_SIZE * scale_pos
@@ -73,25 +77,27 @@ func _ready() -> void:
 	var zoom = zoom_x if zoom_y > zoom_x else zoom_y
 	camera_2d.zoom = Vector2(zoom, zoom)
 	
-	# set camera posS
+	# set camera pos
 	var camera_pos_y = center_y + (camera_offset_y / zoom)
 	camera_2d.position = Vector2(center_x, camera_pos_y)
 	
 	# init block positions
-	
 	for x in collums:
 		for y in rows:
-			for player in 2:
+			for i in 2:
 				var block: Block = block_scene.instantiate()
-				var player_offset = player * center_x + HALF_BLOCK_SIZE * scale_pos
+				var player_offset = i * center_x + HALF_BLOCK_SIZE * scale_pos
 				var x_pos = x * BLOCK_SIZE * scale_pos + player_offset
 				block.position = Vector2(x_pos, y * BLOCK_SIZE * scale_pos + HALF_BLOCK_SIZE * scale_pos)
 				block.scale = Vector2(block_scale, block_scale)
 				block.set_line(line_colour)
-				block.set_layer(player, colours[colours.size() - player - 1])
-				block.name = str(player)
+				block.set_layer(i, colours[colours.size() - i - 1])
+				block.name = str(i)
 				block.hit.connect(flip_block)
-				block_parents[player].add_child.call_deferred(block)
+				
+				all_blocks[i].append(block)
+				
+				block_parents[i].add_child.call_deferred(block)
 	
 	# set balls
 	var ball_padding = BLOCK_SIZE * ball_scale * 2.0
@@ -205,6 +211,16 @@ func random_inside_unit_circle() -> Vector2:
 func flip_block(block: Block) -> void:
 	if block.prev_layer == 3:
 		block.set_layer(1, colours[0])
+		remove_add_block(0, 1, block)
 	elif block.prev_layer == 4:
 		block.set_layer(0, colours[1])
+		remove_add_block(1, 0, block)
+	
+	for i in 2:
+		main_ui.set_score(i, all_blocks[i].size())
 
+
+func remove_add_block(from: int, to: int, block: Block) -> void:
+	# TODO Consider giving an index to the blocks
+	all_blocks[from].remove_at(all_blocks[from].find(block))
+	all_blocks[to].append(block)
