@@ -4,11 +4,12 @@ extends Node2D
 
 @export_group("Camera")
 @export var camera_2d: Camera2D
-@export_range(0.0, 1.0) var sides_padding_percent: float = .5
-@export_range(0.0, 1.0) var tops_padding_percent: float = .33
-@export var camera_offset_y: float = 48
+@export_range(0.0, 1.0) var sides_padding_percent: float = .66
+@export_range(0.0, 1.0) var tops_padding_percent: float = .25
+@export var camera_offset_y: float = 24
 
 @export_group("Nodes")
+@export var main_ui: MainUI
 @export var edge_colliders: Array[CollisionShape2D]
 
 @export_group("Game Settings")
@@ -40,12 +41,14 @@ const block_scene: PackedScene = preload("res://scenes/block.tscn")
 const BLOCK_SIZE: int = 128
 const HALF_BLOCK_SIZE: int = 64
 
+var elapsed_time: float = 0.0
 
 func _ready() -> void:
-	# set clear colour
+	# set clear colourt
 	RenderingServer.set_default_clear_color(background_colour)
 	
 	# set trail gradients
+	var block_parents: Array[Node] = [Node.new(), Node.new()]
 	for i in 2:
 		var g: Gradient = gradient_ball_trail.duplicate()
 		var c = colours[i]
@@ -53,6 +56,8 @@ func _ready() -> void:
 		g.set_color(0, c)
 		g.set_color(1, colours[i])
 		trail_gradients.append(g)
+		
+		root.add_child.call_deferred(block_parents[i])
 	
 	var scale_pos = 1.0 if !scale_position else block_scale
 	var center_x = collums * BLOCK_SIZE * scale_pos
@@ -73,9 +78,6 @@ func _ready() -> void:
 	camera_2d.position = Vector2(center_x, camera_pos_y)
 	
 	# init block positions
-	var block_parents: Array[Node] = [Node.new(), Node.new()]
-	for b in block_parents:
-		root.add_child.call_deferred(b)
 	
 	for x in collums:
 		for y in rows:
@@ -147,10 +149,16 @@ func _ready() -> void:
 	s_left.b = Vector2.ZERO
 
 
+func _process(delta: float) -> void:
+	elapsed_time += delta
+	main_ui.set_time(elapsed_time)
+
+
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("screenshot"):
 		var image = get_viewport().get_texture().get_image()
-		var path = "Screenshots/screenshot_%s.png" % Time.get_datetime_string_from_system().replace("-", "_").replace(":", "_").replace("T", "_")
+		var path = "Screenshots/screenshot_%s.png" % Time.get_datetime_string_from_system() \
+				.replace("-", "_").replace(":", "_").replace("T", "_")
 		image.save_png(path)
 
 
