@@ -135,24 +135,15 @@ func _ready() -> void:
 		spawn_ball_hit_particle();
 	
 	# set edge colliders
-	var top_right = Vector2(block_width, 0.0)
-	var s_top = edge_colliders[0].shape as SegmentShape2D
-	s_top.a = Vector2.ZERO
-	s_top.b = top_right
+	var points: Array[Vector2] = [Vector2.ZERO # Top Left
+			, Vector2(block_width, 0.0) # Top Right
+			, Vector2(block_width, block_height) # Bot Right
+			, Vector2(0, block_height)] # Bot left
 	
-	var bot_right = Vector2(block_width, block_height)
-	var s_right = edge_colliders[1].shape as SegmentShape2D
-	s_right.a = top_right
-	s_right.b = bot_right
-	
-	var bot_left = Vector2(0, block_height)
-	var s_bot = edge_colliders[2].shape as SegmentShape2D
-	s_bot.a = bot_right
-	s_bot.b = bot_left
-	
-	var s_left = edge_colliders[3].shape as SegmentShape2D
-	s_left.a = bot_left
-	s_left.b = Vector2.ZERO
+	for i in edge_colliders.size():
+		var segment = edge_colliders[i].shape as SegmentShape2D
+		segment.a = points[i]
+		segment.b = points[(i + 1) % 4]
 
 
 func _process(delta: float) -> void:
@@ -221,6 +212,5 @@ func flip_block(block: Block) -> void:
 
 
 func remove_add_block(from: int, to: int, block: Block) -> void:
-	# TODO Consider giving an index to the blocks
 	all_blocks[from].remove_at(all_blocks[from].find(block))
 	all_blocks[to].append(block)
