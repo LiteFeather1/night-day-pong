@@ -30,6 +30,7 @@ const ball_scene: PackedScene = preload("res://scenes/ball.tscn")
 @export var show_hit_particle: bool = true
 const BALL_HIT_PARTICLE = preload("res://scenes/ball_hit_particle.tscn")
 var ball_hit_particles: Array[BallHitParticle]
+var parent_ball_hit_particle: Node
 
 # TODO add flag to show trail
 @export var gradient_ball_trail: Gradient
@@ -54,6 +55,9 @@ func _ready() -> void:
 	var scale_pos = 1.0 if !scale_position else block_scale
 	var center_x = collums * BLOCK_SIZE * scale_pos
 	var center_y = rows * BLOCK_SIZE * 0.5 * scale_pos
+	parent_ball_hit_particle = Node.new()
+	parent_ball_hit_particle.set_name("ball_hit_particle_parent")
+	root.add_child.call_deferred(parent_ball_hit_particle)
 	
 	# camera zoom
 	var block_width = center_x * 2.0
@@ -78,13 +82,12 @@ func _ready() -> void:
 		g.set_color(1, colours[i])
 		trail_gradients.append(g)
 		
-		
 		main_ui.set_score(i, collums * rows)
 		
 		# block parent
-		var block_parent = Node.new()
-		block_parent.set_name("block_parent_%d" % i)
-		root.add_child.call_deferred(block_parent)
+		var parent_block = Node.new()
+		parent_block.set_name("block_parent_%d" % i)
+		root.add_child.call_deferred(parent_block)
 		# set block
 		for x in collums:
 			for y in rows:
@@ -101,7 +104,7 @@ func _ready() -> void:
 				
 				all_blocks[i].append(block)
 				
-				block_parent.add_child.call_deferred(block)
+				parent_block.add_child.call_deferred(block)
 	
 	# set balls
 	var ball_padding = BLOCK_SIZE * ball_scale * 2.0
@@ -136,7 +139,7 @@ func _ready() -> void:
 	
 	# Spawn ball hit particles
 	for i in 11:
-		spawn_ball_hit_particle();
+		spawn_ball_hit_particle()
 	
 	# set edge colliders
 	var points: Array[Vector2] = [Vector2.ZERO # Top Left
@@ -173,28 +176,25 @@ func spawn_ball(index: int, pos: Vector2) -> void:
 	root.add_child.call_deferred(ball)
 
 
-func on_ball_hit(hit_point: Vector2, normal: Vector2, colour: Color):
+func on_ball_hit(hit_point: Vector2, normal: Vector2, colour: Color) -> void:
 	if !show_hit_particle:
 		return
 	
 	if ball_hit_particles.size() == 0:
 		spawn_ball_hit_particle()
 	
-	var particle: BallHitParticle = ball_hit_particles.pop_front()
-	particle.position = hit_point
-	particle.direction = normal
-	particle.color = colour
-	particle.emitting = true
+	ball_hit_particles.pop_front().play(hit_point, normal, colour)
 
 
-func spawn_ball_hit_particle():
+func spawn_ball_hit_particle() -> void:
 	var particle: BallHitParticle = BALL_HIT_PARTICLE.instantiate()
+	particle.set_name("ball_hit_particle_%d" % ball_hit_particles.size())
 	particle.finished_playing.connect(return_ball_hit_particle)
 	ball_hit_particles.append(particle)
-	root.add_child.call_deferred(particle)
+	parent_ball_hit_particle.add_child.call_deferred(particle)
 
 
-func return_ball_hit_particle(particle: BallHitParticle):
+func return_ball_hit_particle(particle: BallHitParticle) -> void:
 	ball_hit_particles.append(particle)
 
 

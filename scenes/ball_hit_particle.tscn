@@ -8,8 +8,9 @@ offsets = PackedFloat32Array(0.205405, 1)
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
 
 [node name="ball_hit_particle" type="CPUParticles2D"]
+z_index = 100
 emitting = false
-lifetime = 0.2
+lifetime = 0.25
 one_shot = true
 randomness = 0.25
 lifetime_randomness = 0.13
