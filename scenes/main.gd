@@ -26,6 +26,8 @@ const ball_scene: PackedScene = preload("res://scenes/ball.tscn")
 @export var ball_amount: int = 1
 @export var ball_start_force: float = 2048
 @export var ball_scale: float = .5
+var parents_ball: Array[Node]
+
 
 @export var show_hit_particle: bool = true
 const BALL_HIT_PARTICLE = preload("res://scenes/ball_hit_particle.tscn")
@@ -48,7 +50,6 @@ var elapsed_time: float = 0.0
 
 
 func _ready() -> void:
-	# set clear colour
 	RenderingServer.set_default_clear_color(background_colour)
 	
 	# init variables
@@ -73,18 +74,21 @@ func _ready() -> void:
 	var camera_pos_y = center_y + (camera_offset_y / zoom)
 	camera_2d.position = Vector2(center_x, camera_pos_y)
 	
-	# set trail gradients
 	for i in 2:
+		var parent_ball = Node.new()
+		parent_ball.set_name("parent_ball_%d" % i)
+		parents_ball.append(parent_ball)
+		root.add_child.call_deferred(parent_ball)
+		
 		var g: Gradient = gradient_ball_trail.duplicate()
 		var c = colours[i]
-		c.a = 0
+		c.a = 0.0
 		g.set_color(0, c)
 		g.set_color(1, colours[i])
 		trail_gradients.append(g)
 		
 		main_ui.set_score(i, collums * rows)
 		
-		# block parent
 		var parent_block = Node.new()
 		parent_block.set_name("block_parent_%d" % i)
 		root.add_child.call_deferred(parent_block)
@@ -99,7 +103,7 @@ func _ready() -> void:
 				block.scale = Vector2(block_scale, block_scale)
 				block.set_line(line_colour)
 				block.set_layer(i, colours[colours.size() - i - 1])
-				block.set_name("block_%d_%d" % [i, x * collums + y + 1])
+				block.set_name("block_%d_%d" % [i, x * collums + y])
 				block.hit.connect(flip_block)
 				
 				all_blocks[i].append(block)
@@ -127,18 +131,19 @@ func _ready() -> void:
 		for y in amount_of_rows:
 			var x_pos = min_x_1 + (ball_padding * x)
 			var y_pos = min_y - (ball_padding * y)
-			spawn_ball(0, Vector2(x_pos, y_pos))
-			spawn_ball(1, Vector2(x_pos + center_x, y_pos))
+			spawn_ball(x * amount_per_col + y, 0, Vector2(x_pos, y_pos))
+			spawn_ball(x * amount_per_col + y, 1, Vector2(x_pos + center_x, y_pos))
 	
 	var x_max_2 = min_x_1 + (ball_padding * remainder) + center_x
+	var spawned = (amount_per_col - 1) * amount_per_col + amount_of_rows
 	for r in remainder:
 		var x_pos = min_x_1 + (ball_padding * r)
 		var y_pos = min_y - (ball_padding * amount_of_rows)
-		spawn_ball(0, Vector2(x_pos, y_pos))
-		spawn_ball(1, Vector2(x_max_2 - (ball_padding * r), y_pos))
+		spawn_ball(spawned + r, 0, Vector2(x_pos, y_pos))
+		spawn_ball(spawned + r, 1, Vector2(x_max_2 - (ball_padding * r), y_pos))
 	
 	# Spawn ball hit particles
-	for i in 11:
+	for i in 11 * amount_of_rows:
 		spawn_ball_hit_particle()
 	
 	# set edge colliders
@@ -166,14 +171,15 @@ func _input(event: InputEvent) -> void:
 		image.save_png(path)
 
 
-func spawn_ball(index: int, pos: Vector2) -> void:
+func spawn_ball(index: int, side_index: int, pos: Vector2) -> void:
 	var ball: Ball = ball_scene.instantiate()
-	ball.set_id(index, colours[index])
-	ball.set_trail_gradient(trail_gradients[index])
+	ball.set_name("ball_%d" % index)
+	ball.set_id(side_index, colours[side_index])
+	ball.set_trail_gradient(trail_gradients[side_index])
 	ball.set_pos_scale(pos, ball_scale)
 	ball.on_hit.connect(on_ball_hit)
 	ball.launch(random_inside_unit_circle().normalized() * ball_start_force)
-	root.add_child.call_deferred(ball)
+	parents_ball[side_index].add_child.call_deferred(ball)
 
 
 func on_ball_hit(hit_point: Vector2, normal: Vector2, colour: Color) -> void:
@@ -188,7 +194,6 @@ func on_ball_hit(hit_point: Vector2, normal: Vector2, colour: Color) -> void:
 
 func spawn_ball_hit_particle() -> void:
 	var particle: BallHitParticle = BALL_HIT_PARTICLE.instantiate()
-	particle.set_name("ball_hit_particle_%d" % ball_hit_particles.size())
 	particle.finished_playing.connect(return_ball_hit_particle)
 	ball_hit_particles.append(particle)
 	parent_ball_hit_particle.add_child.call_deferred(particle)

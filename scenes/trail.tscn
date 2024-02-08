@@ -10,6 +10,7 @@ point_count = 2
 [node name="Trail" type="Line2D"]
 show_behind_parent = true
 top_level = true
+z_index = 100
 width = 80.0
 width_curve = SubResource("Curve_6uu1s")
 gradient = ExtResource("1_1h1pw")

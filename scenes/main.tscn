@@ -18,6 +18,7 @@ camera_2d = NodePath("Camera2D")
 main_ui = NodePath("MainUI")
 edge_colliders = [NodePath("edge_collider/collision_shape_top"), NodePath("edge_collider/collision_shape_right"), NodePath("edge_collider/collision_shape_bot"), NodePath("edge_collider/collision_shape_left")]
 colours = Array[Color]([Color(0.317647, 0.356863, 0.529412, 1), Color(0.780392, 0.611765, 0.356863, 1)])
+ball_amount = 3
 gradient_ball_trail = ExtResource("2_pmfab")
 
 [node name="MainUI" parent="." instance=ExtResource("3_3thpt")]
