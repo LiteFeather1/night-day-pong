@@ -31,6 +31,7 @@ const ball_scene: PackedScene = preload("res://scenes/ball.tscn")
 const BALL_HIT_PARTICLE = preload("res://scenes/ball_hit_particle.tscn")
 var ball_hit_particles: Array[BallHitParticle]
 
+# TODO add flag to show trail
 @export var gradient_ball_trail: Gradient
 var trail_gradients: Array[Gradient]
 
@@ -46,23 +47,10 @@ var elapsed_time: float = 0.0
 
 
 func _ready() -> void:
-	# set clear colourt
+	# set clear colour
 	RenderingServer.set_default_clear_color(background_colour)
 	
-	# set trail gradients
-	var block_parents: Array[Node] = [Node.new(), Node.new()]
-	for i in 2:
-		var g: Gradient = gradient_ball_trail.duplicate()
-		var c = colours[i]
-		c.a = 0
-		g.set_color(0, c)
-		g.set_color(1, colours[i])
-		trail_gradients.append(g)
-		
-		root.add_child.call_deferred(block_parents[i])
-		
-		main_ui.set_score(i, collums * rows)
-	
+	# init variables
 	var scale_pos = 1.0 if !scale_position else block_scale
 	var center_x = collums * BLOCK_SIZE * scale_pos
 	var center_y = rows * BLOCK_SIZE * 0.5 * scale_pos
@@ -81,23 +69,39 @@ func _ready() -> void:
 	var camera_pos_y = center_y + (camera_offset_y / zoom)
 	camera_2d.position = Vector2(center_x, camera_pos_y)
 	
-	# init block positions
-	for x in collums:
-		for y in rows:
-			for i in 2:
+	# set trail gradients
+	for i in 2:
+		var g: Gradient = gradient_ball_trail.duplicate()
+		var c = colours[i]
+		c.a = 0
+		g.set_color(0, c)
+		g.set_color(1, colours[i])
+		trail_gradients.append(g)
+		
+		
+		main_ui.set_score(i, collums * rows)
+		
+		# block parent
+		var block_parent = Node.new()
+		block_parent.set_name("block_parent_%d" % i)
+		root.add_child.call_deferred(block_parent)
+		# set block
+		for x in collums:
+			for y in rows:
 				var block: Block = block_scene.instantiate()
 				var player_offset = i * center_x + HALF_BLOCK_SIZE * scale_pos
 				var x_pos = x * BLOCK_SIZE * scale_pos + player_offset
-				block.position = Vector2(x_pos, y * BLOCK_SIZE * scale_pos + HALF_BLOCK_SIZE * scale_pos)
+				var y_pos = y * BLOCK_SIZE * scale_pos + HALF_BLOCK_SIZE * scale_pos
+				block.position = Vector2(x_pos, y_pos)
 				block.scale = Vector2(block_scale, block_scale)
 				block.set_line(line_colour)
 				block.set_layer(i, colours[colours.size() - i - 1])
-				block.name = str(i)
+				block.set_name("block_%d_%d" % [i, x * collums + y + 1])
 				block.hit.connect(flip_block)
 				
 				all_blocks[i].append(block)
 				
-				block_parents[i].add_child.call_deferred(block)
+				block_parent.add_child.call_deferred(block)
 	
 	# set balls
 	var ball_padding = BLOCK_SIZE * ball_scale * 2.0
