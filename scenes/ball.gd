@@ -31,9 +31,10 @@ func set_pos_scale(pos: Vector2, scal: float) -> void:
 
 
 func set_id(id: int, c: Color) -> void:
-	set_collision_layer_value(id + 1, true)
+	var layer: int = id + 1
+	set_collision_layer_value(layer, true)
 	
-	set_collision_mask_value(id + 1, true)
+	set_collision_mask_value(layer, true)
 	set_collision_mask_value(4 - id, true)
 	
 	sprite_2d.modulate = c

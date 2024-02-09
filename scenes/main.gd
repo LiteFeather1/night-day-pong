@@ -22,7 +22,7 @@ extends Node2D
 @export var background_colour: Color = Color("1e1e1e")
 
 @export_group("Ball Settings")
-const ball_scene: PackedScene = preload("res://scenes/ball.tscn")
+const BALL_SCENE: PackedScene = preload("res://scenes/ball.tscn")
 @export var ball_amount: int = 1
 @export var ball_start_force: float = 2048
 @export var ball_scale: float = .5
@@ -38,7 +38,7 @@ var parent_ball_hit_particle: Node
 var trail_gradients: Array[Gradient]
 
 @export_group("Block Settings")
-const block_scene: PackedScene = preload("res://scenes/block.tscn")
+const BLOCK_SCENE: PackedScene = preload("res://scenes/block.tscn")
 var all_blocks: Array[Array] = [[], []]
 @export var block_scale: float = 1.0
 @export var scale_position: bool = false
@@ -65,7 +65,7 @@ func _ready() -> void:
 	var viewport = get_viewport().size
 	var zoom_x = viewport.x / (block_width * (sides_padding_percent + 1))
 	var size_y = block_height * (tops_padding_percent + 1)
-	var zoom_y = viewport.y / size_y
+	var zoom_y = viewport.y / size_y	
 	var zoom = zoom_x if zoom_y > zoom_x else zoom_y
 	camera_2d.zoom = Vector2(zoom, zoom)
 	
@@ -92,10 +92,10 @@ func _ready() -> void:
 		parent_block.set_name("block_parent_%d" % i)
 		root.add_child.call_deferred(parent_block)
 		# set block
+		var player_offset = i * center_x + HALF_BLOCK_SIZE * scale_pos
 		for x in collums:
 			for y in rows:
-				var block: Block = block_scene.instantiate()
-				var player_offset = i * center_x + HALF_BLOCK_SIZE * scale_pos
+				var block: Block = BLOCK_SCENE.instantiate()
 				var x_pos = x * BLOCK_SIZE * scale_pos + player_offset
 				var y_pos = y * BLOCK_SIZE * scale_pos + HALF_BLOCK_SIZE * scale_pos
 				block.position = Vector2(x_pos, y_pos)
@@ -130,18 +130,18 @@ func _ready() -> void:
 		for y in amount_of_rows:
 			var x_pos = min_x_1 + (ball_padding * x)
 			var y_pos = min_y - (ball_padding * y)
-			var index = x * amount_per_col + y
-			spawn_ball(index, 0, Vector2(x_pos, y_pos))
-			spawn_ball(index, 1, Vector2(x_pos + center_x, y_pos))
+			var num = x * amount_per_col + y
+			spawn_ball(num, 0, Vector2(x_pos, y_pos))
+			spawn_ball(num, 1, Vector2(x_pos + center_x, y_pos))
 	
 	var x_max_2 = min_x_1 + (ball_padding * remainder) + center_x
 	var spawned = (amount_per_col - 1) * amount_per_col + amount_of_rows
+	var y_ball_remainder_pos = min_y - (ball_padding * amount_of_rows)
 	for r in remainder:
 		var x_pos = min_x_1 + (ball_padding * r)
-		var y_pos = min_y - (ball_padding * amount_of_rows)
-		var index = spawned + r
-		spawn_ball(index, 0, Vector2(x_pos, y_pos))
-		spawn_ball(index, 1, Vector2(x_max_2 - (ball_padding * r), y_pos))
+		var num = spawned + r
+		spawn_ball(num, 0, Vector2(x_pos, y_ball_remainder_pos))
+		spawn_ball(num, 1, Vector2(x_max_2 - (ball_padding * r), y_ball_remainder_pos))
 	
 	# Spawn ball hit particles
 	for i in 11 * amount_of_rows:
@@ -172,16 +172,18 @@ func _input(event: InputEvent) -> void:
 		image.save_png(path)
 
 
-func spawn_ball(index: int, side_index: int, pos: Vector2) -> void:
-	var ball: Ball = ball_scene.instantiate()
-	ball.set_name("ball_%d" % index)
-	ball.set_id(side_index, colours[side_index])
-	ball.trail.set_gradient(trail_gradients[side_index])
+func spawn_ball(num: int, index: int, pos: Vector2) -> void:
+	var ball: Ball = BALL_SCENE.instantiate()
+	ball.set_name("ball_%d" % num)
+	ball.set_id(index, colours[index])
+	ball.trail.set_gradient(trail_gradients[index])
 	ball.trail.set_state(show_ball_trail)
 	ball.set_pos_scale(pos, ball_scale)
 	ball.on_hit.connect(on_ball_hit)
-	ball.launch(random_inside_unit_circle().normalized() * ball_start_force)
-	parents_ball[side_index].add_child.call_deferred(ball)
+	var theta = randf() * TAU
+	var random_inside_unit_circle = Vector2(cos(theta), sin(theta)) * sqrt(randf())
+	ball.launch(random_inside_unit_circle.normalized() * ball_start_force)
+	parents_ball[index].add_child.call_deferred(ball)
 
 
 func on_ball_hit(hit_point: Vector2, normal: Vector2, colour: Color) -> void:
@@ -203,11 +205,6 @@ func spawn_ball_hit_particle() -> void:
 
 func return_ball_hit_particle(particle: BallHitParticle) -> void:
 	ball_hit_particles.append(particle)
-
-
-func random_inside_unit_circle() -> Vector2:
-	var theta = randf() * TAU
-	return Vector2(cos(theta), sin(theta)) * sqrt(randf())
 
 
 func flip_block(block: Block) -> void:
