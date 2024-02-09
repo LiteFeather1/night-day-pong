@@ -85,7 +85,7 @@ func _ready() -> void:
 		
 		var g: Gradient = gradient_ball_trail.duplicate()
 		var c = colours[i]
-		c.a = 0.0
+		c.a = g.get_color(0).a
 		g.set_color(0, c)
 		g.set_color(1, colours[i])
 		trail_gradients.append(g)
