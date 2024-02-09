@@ -1,3 +1,4 @@
+class_name Main
 extends Node2D
  
 @onready var root: Window = get_tree().get_root()

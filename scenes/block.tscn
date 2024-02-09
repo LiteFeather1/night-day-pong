@@ -18,10 +18,12 @@ sprite_block = NodePath("sprite_block")
 shape = SubResource("RectangleShape2D_q7s7o")
 
 [node name="sprite_line" type="Sprite2D" parent="."]
+visible = false
 light_mask = 5
 texture = ExtResource("2_hd17b")
 
 [node name="sprite_block" type="Sprite2D" parent="."]
+visible = false
 modulate = Color(0.0392157, 0.0392157, 0.0392157, 1)
 light_mask = 5
 scale = Vector2(0.98, 0.98)

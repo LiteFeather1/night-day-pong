@@ -1,8 +1,9 @@
-[gd_scene load_steps=8 format=3 uid="uid://dlcorhedtop3s"]
+[gd_scene load_steps=9 format=3 uid="uid://dlcorhedtop3s"]
 
 [ext_resource type="Script" path="res://scenes/main.gd" id="1_w6ri1"]
 [ext_resource type="Gradient" uid="uid://cdewtxtnf6wbp" path="res://resources/gradient_ball_trail.tres" id="2_pmfab"]
 [ext_resource type="PackedScene" uid="uid://de101w5xkkdj8" path="res://scenes/main_ui.tscn" id="3_3thpt"]
+[ext_resource type="Script" path="res://scenes/block_drawer.gd" id="3_m2v8j"]
 
 [sub_resource type="SegmentShape2D" id="SegmentShape2D_b1hlo"]
 
@@ -22,6 +23,13 @@ collums = 4
 rows = 4
 colours = Array[Color]([Color(0.317647, 0.356863, 0.529412, 1), Color(0.780392, 0.611765, 0.356863, 1)])
 gradient_ball_trail = ExtResource("2_pmfab")
+scale_position = false
+
+[node name="block_drawer" type="Node2D" parent="." node_paths=PackedStringArray("main")]
+z_index = -100
+script = ExtResource("3_m2v8j")
+main = NodePath("..")
+stroke = 0.975
 
 [node name="MainUI" parent="." instance=ExtResource("3_3thpt")]
 
