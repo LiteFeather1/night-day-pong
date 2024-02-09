@@ -13,8 +13,8 @@ extends Node2D
 @export var edge_colliders: Array[CollisionShape2D]
 
 @export_group("Game Settings")
-@export var collums: int = 4
-@export var rows: int = 4
+@export var collums: int = 8
+@export var rows: int = 8
 
 @export_group("Colours")
 @export var colours: Array[Color]
@@ -131,26 +131,28 @@ func _ready() -> void:
 		for y in amount_of_rows:
 			var x_pos = min_x_1 + (ball_padding * x)
 			var y_pos = min_y - (ball_padding * y)
-			spawn_ball(x * amount_per_col + y, 0, Vector2(x_pos, y_pos))
-			spawn_ball(x * amount_per_col + y, 1, Vector2(x_pos + center_x, y_pos))
+			var index = x * amount_per_col + y
+			spawn_ball(index, 0, Vector2(x_pos, y_pos))
+			spawn_ball(index, 1, Vector2(x_pos + center_x, y_pos))
 	
 	var x_max_2 = min_x_1 + (ball_padding * remainder) + center_x
 	var spawned = (amount_per_col - 1) * amount_per_col + amount_of_rows
 	for r in remainder:
 		var x_pos = min_x_1 + (ball_padding * r)
 		var y_pos = min_y - (ball_padding * amount_of_rows)
-		spawn_ball(spawned + r, 0, Vector2(x_pos, y_pos))
-		spawn_ball(spawned + r, 1, Vector2(x_max_2 - (ball_padding * r), y_pos))
+		var index = spawned + r
+		spawn_ball(index, 0, Vector2(x_pos, y_pos))
+		spawn_ball(index, 1, Vector2(x_max_2 - (ball_padding * r), y_pos))
 	
 	# Spawn ball hit particles
 	for i in 11 * amount_of_rows:
 		spawn_ball_hit_particle()
 	
 	# set edge colliders
-	var points: Array[Vector2] = [Vector2.ZERO # Top Left
-			, Vector2(block_width, 0.0) # Top Right
-			, Vector2(block_width, block_height) # Bot Right
-			, Vector2(0, block_height)] # Bot left
+	var points: Array[Vector2] = [Vector2.ZERO, # Top Left
+			Vector2(block_width, 0.0), # Top Right
+			Vector2(block_width, block_height), # Bot Right
+			Vector2(0.0, block_height)] # Bot left
 	
 	for i in edge_colliders.size():
 		var segment = edge_colliders[i].shape as SegmentShape2D
@@ -204,22 +206,19 @@ func return_ball_hit_particle(particle: BallHitParticle) -> void:
 
 
 func random_inside_unit_circle() -> Vector2:
-	var theta = randf() * 2.0 * PI
+	var theta = randf() * TAU
 	return Vector2(cos(theta), sin(theta)) * sqrt(randf())
 
 
 func flip_block(block: Block) -> void:
-	if block.prev_layer == 3:
-		block.set_layer(1, colours[0])
-		remove_add_block(0, 1, block)
-	elif block.prev_layer == 4:
-		block.set_layer(0, colours[1])
-		remove_add_block(1, 0, block)
+	var from = block.prev_layer - 3
+	var to = block.prev_layer % 2
 	
-	for i in 2:
-		main_ui.set_score(i, all_blocks[i].size())
-
-
-func remove_add_block(from: int, to: int, block: Block) -> void:
+	block.set_layer(to, colours[from])
+	
 	all_blocks[from].remove_at(all_blocks[from].find(block))
 	all_blocks[to].append(block)
+	
+	main_ui.set_score(from, all_blocks[from].size())
+	main_ui.set_score(to, all_blocks[to].size())
+
