@@ -1,6 +1,8 @@
 class_name Main
 extends Node2D
  
+signal redraw_blocks()
+
 @onready var root: Window = get_tree().get_root()
 
 @export_group("Camera")
@@ -232,4 +234,6 @@ func flip_block(block: Block) -> void:
 	
 	main_ui.set_score(from, all_blocks[from].size())
 	main_ui.set_score(to, all_blocks[to].size())
+	
+	redraw_blocks.emit()
 

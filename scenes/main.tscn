@@ -22,6 +22,7 @@ edge_colliders = [NodePath("edge_collider/collision_shape_top"), NodePath("edge_
 collums = 4
 rows = 4
 colours = Array[Color]([Color(0.317647, 0.356863, 0.529412, 1), Color(0.780392, 0.611765, 0.356863, 1)])
+line_colour = Color(0, 0, 0, 1)
 gradient_ball_trail = ExtResource("2_pmfab")
 scale_position = false
 
@@ -53,3 +54,5 @@ shape = SubResource("SegmentShape2D_cf11h")
 
 [node name="Camera2D" type="Camera2D" parent="."]
 position = Vector2(640, 360)
+
+[connection signal="redraw_blocks" from="." to="block_drawer" method="redraw"]
