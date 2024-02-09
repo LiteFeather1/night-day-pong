@@ -8,7 +8,7 @@ signal hit(block: Block)
 var id: int
 
 
-func set_layer(layer_id: int, colour: Color) -> void:
+func set_layer(layer_id: int) -> void:
 	id = layer_id
 	set_collision_layer_value(layer_id + 3, true)
 

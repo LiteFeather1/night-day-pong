@@ -103,8 +103,7 @@ func _ready() -> void:
 				var y_pos = y * BLOCK_SIZE * scale_pos + HALF_BLOCK_SIZE * scale_pos
 				block.position = Vector2(x_pos, y_pos)
 				block.scale = Vector2(block_scale, block_scale)
-				block.set_line(line_colour)
-				block.set_layer(i, colours[colours.size() - i - 1])
+				block.set_layer(i)
 				block.set_name("block_%d_%d" % [i, x * collums + y])
 				block.hit.connect(flip_block)
 				
@@ -227,7 +226,7 @@ func flip_block(block: Block) -> void:
 	var from = block.id
 	var to = (block.id + 1) % 2
 	
-	block.set_layer(to, colours[from])
+	block.set_layer(to)
 	
 	all_blocks[from].remove_at(all_blocks[from].find(block))
 	all_blocks[to].append(block)
