@@ -224,8 +224,8 @@ func return_ball_hit_particle(particle: BallHitParticle) -> void:
 
 
 func flip_block(block: Block) -> void:
-	var from = block.prev_layer - 3
-	var to = block.prev_layer % 2
+	var from = block.id
+	var to = (block.id + 1) % 2
 	
 	block.set_layer(to, colours[from])
 	

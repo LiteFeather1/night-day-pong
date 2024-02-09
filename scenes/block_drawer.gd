@@ -18,20 +18,22 @@ func _draw() -> void:
 		draw_rect(Rect2(Vector2.ZERO, s), main.line_colour)
 		
 		for i in main.all_blocks.size():
+			var colour = main.colours[(i + 1) % 2]
 			for block in main.all_blocks[i]:
 				var p = Vector2(block.position.x - offset, block.position.y - offset)
-				draw_rect(Rect2(p, block_size), main.colours[(i + 1) % 2])
+				draw_rect(Rect2(p, block_size), colour)
 	else:
 		var stroke_size = Vector2(size, size)
 		var stroke_offset = size * .5
 		for i in main.all_blocks.size():
+			var colour = main.colours[(i + 1) % 2]
 			for block in main.all_blocks[i]:
 				var stroke_p = Vector2(block.position.x - stroke_offset,
 						block.position.y - stroke_offset)
 				draw_rect(Rect2(stroke_p, stroke_size), main.line_colour)
 				
 				var p = Vector2(block.position.x - offset, block.position.y - offset)
-				draw_rect(Rect2(p, block_size), main.colours[(i + 1) % 2])
+				draw_rect(Rect2(p, block_size), colour)
 
 
 func redraw() -> void:
