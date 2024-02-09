@@ -28,13 +28,12 @@ const ball_scene: PackedScene = preload("res://scenes/ball.tscn")
 @export var ball_scale: float = .5
 var parents_ball: Array[Node]
 
-
 @export var show_hit_particle: bool = true
 const BALL_HIT_PARTICLE = preload("res://scenes/ball_hit_particle.tscn")
 var ball_hit_particles: Array[BallHitParticle]
 var parent_ball_hit_particle: Node
 
-# TODO add flag to show trail
+@export var show_ball_trail: bool = true
 @export var gradient_ball_trail: Gradient
 var trail_gradients: Array[Gradient]
 
@@ -177,7 +176,8 @@ func spawn_ball(index: int, side_index: int, pos: Vector2) -> void:
 	var ball: Ball = ball_scene.instantiate()
 	ball.set_name("ball_%d" % index)
 	ball.set_id(side_index, colours[side_index])
-	ball.set_trail_gradient(trail_gradients[side_index])
+	ball.trail.set_gradient(trail_gradients[side_index])
+	ball.trail.set_state(show_ball_trail)
 	ball.set_pos_scale(pos, ball_scale)
 	ball.on_hit.connect(on_ball_hit)
 	ball.launch(random_inside_unit_circle().normalized() * ball_start_force)

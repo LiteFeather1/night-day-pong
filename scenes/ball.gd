@@ -39,10 +39,6 @@ func set_id(id: int, c: Color) -> void:
 	sprite_2d.modulate = c
 
 
-func set_trail_gradient(g: Gradient) -> void:
-	trail.set_gradient(g)
-
-
 func launch(force: Vector2) -> void:
 	velocity = force 
 
