@@ -19,4 +19,3 @@ trail = NodePath("Trail")
 shape = SubResource("CircleShape2D_onjxi")
 
 [node name="Trail" parent="." instance=ExtResource("3_mfpsi")]
-visible = false

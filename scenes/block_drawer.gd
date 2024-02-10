@@ -5,35 +5,32 @@ extends Node2D
 @export var main: Main
 
 
-@export_range(0.0, 1.0) var stroke: float = .95
+@export_range(0.0, 1.0) var stroke_width: float = .975
 
 
 func _draw() -> void:
-	var size = main.BLOCK_SIZE * main.block_scale
-	var block_scale = size * stroke
-	var offset = block_scale * .5
-	var block_size = Vector2(block_scale, block_scale)
+	var stroke_size = main.BLOCK_SIZE * main.block_scale
+	var block_size = stroke_size * stroke_width
+	var offset = block_size * .5
 	if main.scale_position:
-		var s = Vector2(main.collums * size * 2, main.rows * size)
-		draw_rect(Rect2(Vector2.ZERO, s), main.line_colour)
+		draw_rect(Rect2(0.0, 0.0, 
+				main.collums * stroke_size * 2.0, main.rows * stroke_size), main.line_colour)
 		
 		for i in main.all_blocks.size():
 			var colour = main.colours[(i + 1) % 2]
 			for block in main.all_blocks[i]:
-				var p = Vector2(block.position.x - offset, block.position.y - offset)
-				draw_rect(Rect2(p, block_size), colour)
+				draw_rect(Rect2(block.position.x - offset, block.position.y - offset, 
+						block_size, block_size), colour)
 	else:
-		var stroke_size = Vector2(size, size)
-		var stroke_offset = size * .5
+		var stroke_offset = stroke_size * .5
 		for i in main.all_blocks.size():
 			var colour = main.colours[(i + 1) % 2]
 			for block in main.all_blocks[i]:
-				var stroke_p = Vector2(block.position.x - stroke_offset,
-						block.position.y - stroke_offset)
-				draw_rect(Rect2(stroke_p, stroke_size), main.line_colour)
+				draw_rect(Rect2(block.position.x - stroke_offset, block.position.y - stroke_offset,
+						stroke_size, stroke_size), main.line_colour)
 				
-				var p = Vector2(block.position.x - offset, block.position.y - offset)
-				draw_rect(Rect2(p, block_size), colour)
+				draw_rect(Rect2(block.position.x - offset, block.position.y - offset, 
+						block_size, block_size), colour)
 
 
 func redraw() -> void:

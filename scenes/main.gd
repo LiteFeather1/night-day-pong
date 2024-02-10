@@ -3,6 +3,7 @@ extends Node2D
  
 signal redraw_blocks()
 
+
 @onready var root: Window = get_tree().get_root()
 
 @export_group("Camera")
@@ -164,11 +165,10 @@ func _ready() -> void:
 
 
 func _draw() -> void:
-	var radius = BLOCK_SIZE * ball_scale * .5
+	var radius = HALF_BLOCK_SIZE * ball_scale
 	for i in 2:
 		var colour = colours[i]
-		var size = balls[i].size()
-		for j in size:
+		for j in balls[i].size():
 			draw_circle(balls[i][j].position, radius, colour)
 
 
