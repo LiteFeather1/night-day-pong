@@ -58,7 +58,7 @@ func _ready() -> void:
 	
 	# init variables
 	var scale_pos = 1.0 if !scale_position else block_scale
-	var center_x = collums * BLOCK_SIZE * scale_pos
+	var center_x : float = collums * BLOCK_SIZE * scale_pos
 	var center_y = rows * BLOCK_SIZE * 0.5 * scale_pos
 	parent_ball_hit_particle = Node.new()
 	parent_ball_hit_particle.set_name("ball_hit_particle_parent")
@@ -78,6 +78,16 @@ func _ready() -> void:
 	var camera_pos_y = center_y + (camera_offset_y / zoom)
 	camera_2d.position = Vector2(center_x, camera_pos_y)
 	
+	# set edge colliders
+	var points := [center_x, 0.0, # Top 
+			block_width, center_y, # Right
+			center_x, block_height, # Bot 
+			0.0, center_y] # left
+	
+	for i in edge_colliders.size():
+		var i_point := i * 2
+		edge_colliders[i].position = Vector2(points[i_point], points[i_point + 1])
+	
 	for i in 2:
 		var parent_ball = Node.new()
 		parent_ball.set_name("parent_ball_%d" % i)
@@ -90,7 +100,6 @@ func _ready() -> void:
 		g.set_color(0, c)
 		g.set_color(1, colours[i])
 		trail_gradients.append(g)
-		
 		
 		var parent_block = Node.new()
 		parent_block.set_name("block_parent_%d" % i)
@@ -151,17 +160,6 @@ func _ready() -> void:
 	# Spawn ball hit particles
 	for i in 11 * amount_of_rows:
 		spawn_ball_hit_particle()
-	
-	# set edge colliders
-	var points: Array[Vector2] = [Vector2.ZERO, # Top Left
-			Vector2(block_width, 0.0), # Top Right
-			Vector2(block_width, block_height), # Bot Right
-			Vector2(0.0, block_height)] # Bot left
-	
-	for i in edge_colliders.size():
-		var segment = edge_colliders[i].shape as SegmentShape2D
-		segment.a = points[i]
-		segment.b = points[(i + 1) % 4]
 
 
 func _draw() -> void:
