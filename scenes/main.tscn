@@ -22,13 +22,9 @@ normal = Vector2(1, 0)
 [node name="Main" type="Node2D" node_paths=PackedStringArray("camera_2d", "main_ui", "edge_colliders")]
 script = ExtResource("1_w6ri1")
 camera_2d = NodePath("Camera2D")
-camera_offset_y = 32.0
 main_ui = NodePath("MainUI")
 edge_colliders = [NodePath("edge_collider/collision_shape_top"), NodePath("edge_collider/collision_shape_right"), NodePath("edge_collider/collision_shape_bot"), NodePath("edge_collider/collision_shape_left")]
-collums = 4
-rows = 4
-colours = Array[Color]([Color(0.317647, 0.356863, 0.529412, 1), Color(0.780392, 0.611765, 0.356863, 1)])
-line_colour = Color(0, 0, 0, 1)
+colours = Array[Color]([Color(0.265, 0.313583, 0.53, 1), Color(0.78, 0.5434, 0.273, 1)])
 gradient_ball_trail = SubResource("Gradient_plf0e")
 
 [node name="block_drawer" type="Node2D" parent="." node_paths=PackedStringArray("main")]
@@ -43,19 +39,15 @@ collision_layer = 15
 collision_mask = 15
 
 [node name="collision_shape_top" type="CollisionShape2D" parent="edge_collider"]
-position = Vector2(641, 1)
 shape = SubResource("WorldBoundaryShape2D_uvmjs")
 
 [node name="collision_shape_right" type="CollisionShape2D" parent="edge_collider"]
-position = Vector2(1276, 384)
 shape = SubResource("WorldBoundaryShape2D_5yte2")
 
 [node name="collision_shape_bot" type="CollisionShape2D" parent="edge_collider"]
-position = Vector2(654, 724)
 shape = SubResource("WorldBoundaryShape2D_ndgq5")
 
 [node name="collision_shape_left" type="CollisionShape2D" parent="edge_collider"]
-position = Vector2(3, 325)
 shape = SubResource("WorldBoundaryShape2D_cjuud")
 
 [node name="Camera2D" type="Camera2D" parent="."]
