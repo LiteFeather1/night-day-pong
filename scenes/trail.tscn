@@ -1,11 +1,14 @@
 [gd_scene load_steps=4 format=3 uid="uid://dhkyrwsb80sel"]
 
-[ext_resource type="Gradient" uid="uid://cdewtxtnf6wbp" path="res://resources/gradient_ball_trail.tres" id="1_1h1pw"]
 [ext_resource type="Script" path="res://scenes/trail.gd" id="1_fmkc4"]
 
 [sub_resource type="Curve" id="Curve_6uu1s"]
 _data = [Vector2(0, 0), 0.0, 0.0, 0, 0, Vector2(1, 1), 0.0, 0.0, 0, 0]
 point_count = 2
+
+[sub_resource type="Gradient" id="Gradient_hsevw"]
+offsets = PackedFloat32Array(0.119816, 0.894009)
+colors = PackedColorArray(1, 1, 1, 0, 1, 1, 1, 1)
 
 [node name="Trail" type="Line2D"]
 show_behind_parent = true
@@ -13,7 +16,7 @@ top_level = true
 z_index = 100
 width = 80.0
 width_curve = SubResource("Curve_6uu1s")
-gradient = ExtResource("1_1h1pw")
+gradient = SubResource("Gradient_hsevw")
 joint_mode = 2
 begin_cap_mode = 2
 end_cap_mode = 2

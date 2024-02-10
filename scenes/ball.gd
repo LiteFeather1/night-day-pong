@@ -2,11 +2,11 @@ class_name Ball
 extends CharacterBody2D
 
 
-signal on_hit(hit_point: Vector2, normal: Vector2, colour: Color)
+signal on_hit(hit_point: Vector2, normal: Vector2, id: int)
 
-@export var sprite_2d: Sprite2D
 @export var trail: Trail
 
+var id: int = -1 
 
 func _process(delta: float) -> void:
 	var collision_info = move_and_collide(velocity * delta)
@@ -17,7 +17,7 @@ func _process(delta: float) -> void:
 	var normal = collision_info.get_normal()
 	velocity = velocity.bounce(normal)
 	
-	on_hit.emit(collision_info.get_position(), normal, sprite_2d.modulate)
+	on_hit.emit(collision_info.get_position(), normal, id)
 	
 	var block = collision_info.get_collider() as Block
 	if block:
@@ -30,14 +30,13 @@ func set_pos_scale(pos: Vector2, scal: float) -> void:
 	trail.width *= scal
 
 
-func set_id(id: int, c: Color) -> void:
-	var layer: int = id + 1
+func set_id(i: int) -> void:
+	id = i
+	var layer = i + 1
 	set_collision_layer_value(layer, true)
 	
 	set_collision_mask_value(layer, true)
-	set_collision_mask_value(4 - id, true)
-	
-	sprite_2d.modulate = c
+	set_collision_mask_value(4 - i, true)
 
 
 func launch(force: Vector2) -> void:

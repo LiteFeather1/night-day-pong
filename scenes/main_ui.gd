@@ -16,3 +16,4 @@ func set_time(time: float) -> void:
 
 func set_score(index: int, score: int) -> void:
 	l_scores[index].set_text("%d" % score)
+

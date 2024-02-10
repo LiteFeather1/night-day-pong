@@ -1,27 +1,15 @@
-[gd_scene load_steps=4 format=3 uid="uid://bvl3a27tn78cx"]
+[gd_scene load_steps=3 format=3 uid="uid://bvl3a27tn78cx"]
 
 [ext_resource type="Script" path="res://scenes/block.gd" id="1_eioas"]
-[ext_resource type="Texture2D" uid="uid://piqdgn5ombbr" path="res://Sprites/Rect_128.png" id="2_hd17b"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_q7s7o"]
 size = Vector2(128, 128)
 
-[node name="Block" type="StaticBody2D" node_paths=PackedStringArray("sprite_line", "sprite_block")]
+[node name="Block" type="StaticBody2D"]
+z_index = -100
 collision_layer = 0
 collision_mask = 0
 script = ExtResource("1_eioas")
-sprite_line = NodePath("sprite_line")
-sprite_block = NodePath("sprite_block")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_q7s7o")
-
-[node name="sprite_line" type="Sprite2D" parent="."]
-light_mask = 5
-texture = ExtResource("2_hd17b")
-
-[node name="sprite_block" type="Sprite2D" parent="."]
-modulate = Color(0.0392157, 0.0392157, 0.0392157, 1)
-light_mask = 5
-scale = Vector2(0.98, 0.98)
-texture = ExtResource("2_hd17b")
