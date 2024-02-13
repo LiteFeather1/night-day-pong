@@ -8,7 +8,7 @@ signal redraw_blocks()
 
 @export_group("Camera")
 @export var camera_2d: Camera2D
-@export_range(0.0, 1.0) var sides_padding_percent: float = .66
+@export_range(0.0, 1.0) var sides_padding_percent: float = .6
 @export_range(0.0, 1.0) var tops_padding_percent: float = .25
 @export var camera_offset_y: float = 32
 
@@ -79,7 +79,8 @@ func _ready() -> void:
 	camera_2d.position = Vector2(center_x, camera_pos_y)
 	
 	# set edge colliders
-	var points := [center_x, 0.0, # Top 
+	var points := [
+			center_x, 0.0, # Top 
 			block_width, center_y, # Right
 			center_x, block_height, # Bot 
 			0.0, center_y] # left
@@ -89,11 +90,13 @@ func _ready() -> void:
 		edge_colliders[i].position = Vector2(points[i_point], points[i_point + 1])
 	
 	for i in 2:
+		# ball parents
 		var parent_ball := Node.new()
 		parent_ball.set_name("parent_ball_%d" % i)
 		parents_ball.append(parent_ball)
 		root.add_child.call_deferred(parent_ball)
 		
+		# duplicate gradients
 		var g := gradient_ball_trail.duplicate()
 		var c := colours[i]
 		c.a = g.get_color(0).a
@@ -101,10 +104,10 @@ func _ready() -> void:
 		g.set_color(1, colours[i])
 		trail_gradients.append(g)
 		
+		# set block
 		var parent_block := Node.new()
 		parent_block.set_name("block_parent_%d" % i)
 		root.add_child.call_deferred(parent_block)
-		# set block
 		var player_offset := i * center_x + HALF_BLOCK_SIZE * scale_pos
 		for x in collums:
 			for y in rows:
