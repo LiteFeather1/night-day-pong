@@ -9,6 +9,7 @@ signal on_hit(hit_point: Vector2, normal: Vector2, id: int)
 
 var id: int = -1 
 
+
 func _process(delta: float) -> void:
 	var collision_info := move_and_collide(velocity * delta)
 	

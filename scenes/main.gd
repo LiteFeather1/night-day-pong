@@ -1,6 +1,7 @@
 class_name Main
 extends Node2D
  
+
 signal redraw_blocks()
 
 
@@ -17,8 +18,14 @@ signal redraw_blocks()
 @export var edge_colliders: Array[CollisionShape2D]
 
 @export_group("Game Settings")
-@export var collums: int = 8
-@export var rows: int = 8
+@export var collums: int = 8:
+	set(value):
+		collums = value
+		place_blocks()
+@export var rows: int = 8:
+	set(value):
+		rows = value
+		place_blocks()
 
 @export_group("Colours")
 @export var colours: Array[Color]
@@ -52,42 +59,16 @@ const HALF_BLOCK_SIZE: int = 64
 
 var elapsed_time: float = 0.0
 
+# variables
+var scale_pos: float = 1.0 if !scale_position else block_scale
+var center_x: float
+var center_y: float
+
 
 func _ready() -> void:
 	RenderingServer.set_default_clear_color(background_colour)
 	
-	# init variables
-	var scale_pos := 1.0 if !scale_position else block_scale
-	var center_x := collums * BLOCK_SIZE * scale_pos
-	var center_y := rows * BLOCK_SIZE * 0.5 * scale_pos
-	parent_ball_hit_particle = Node.new()
-	parent_ball_hit_particle.set_name("ball_hit_particle_parent")
-	root.add_child.call_deferred(parent_ball_hit_particle)
-	
-	# camera zoom
-	var block_width := center_x * 2.0
-	var block_height := center_y * 2.0
-	var viewport: Vector2i = get_viewport().get_size()
-	var zoom_x := viewport.x / (block_width * (sides_padding_percent + 1))
-	var size_y := block_height * (tops_padding_percent + 1)
-	var zoom_y := viewport.y / size_y
-	var zoom := zoom_x if zoom_y > zoom_x else zoom_y
-	camera_2d.zoom = Vector2(zoom, zoom)
-	
-	# set camera pos
-	var camera_pos_y := center_y + (camera_offset_y / zoom)
-	camera_2d.position = Vector2(center_x, camera_pos_y)
-	
-	# set edge colliders
-	var points := [
-			center_x, 0.0, # Top 
-			block_width, center_y, # Right
-			center_x, block_height, # Bot 
-			0.0, center_y] # left
-	
-	for i in edge_colliders.size():
-		var i_point := i * 2
-		edge_colliders[i].position = Vector2(points[i_point], points[i_point + 1])
+	place_blocks()
 	
 	for i in 2:
 		# ball parents
@@ -103,28 +84,6 @@ func _ready() -> void:
 		g.set_color(0, c)
 		g.set_color(1, colours[i])
 		trail_gradients.append(g)
-		
-		# set block
-		var parent_block := Node.new()
-		parent_block.set_name("block_parent_%d" % i)
-		root.add_child.call_deferred(parent_block)
-		var player_offset := i * center_x + HALF_BLOCK_SIZE * scale_pos
-		for x in collums:
-			for y in rows:
-				var block: Block = BLOCK_SCENE.instantiate()
-				var x_pos := x * BLOCK_SIZE * scale_pos + player_offset
-				var y_pos := y * BLOCK_SIZE * scale_pos + HALF_BLOCK_SIZE * scale_pos
-				block.position = Vector2(x_pos, y_pos)
-				block.scale = Vector2(block_scale, block_scale)
-				block.set_layer(i)
-				block.set_name("block_%d_%d" % [i, x * collums + y])
-				block.hit.connect(flip_block)
-				
-				all_blocks[i].append(block)
-				
-				parent_block.add_child.call_deferred(block)
-		
-		main_ui.set_score(i, all_blocks[i].size())
 	
 	# set balls
 	var ball_padding := BLOCK_SIZE * scale_pos
@@ -161,6 +120,9 @@ func _ready() -> void:
 		spawn_ball(num, 1, Vector2(x_max_2 - (ball_padding * r), y_ball_remainder_pos))
 	
 	# Spawn ball hit particles
+	parent_ball_hit_particle = Node.new()
+	parent_ball_hit_particle.set_name("ball_hit_particle_parent")
+	root.add_child.call_deferred(parent_ball_hit_particle)
 	for i in 11 * amount_of_rows:
 		spawn_ball_hit_particle()
 
@@ -185,6 +147,61 @@ func _input(event: InputEvent) -> void:
 		var path := "Screenshots/screenshot_%s.png" % Time.get_datetime_string_from_system() \
 				.replace("-", "_").replace(":", "_").replace("T", "_")
 		image.save_png(path)
+
+# This also repositions the camera and the edge colliders
+func place_blocks() -> void:
+	# init variables
+	scale_pos = 1.0 if !scale_position else block_scale
+	center_x = collums * BLOCK_SIZE * scale_pos
+	center_y = rows * BLOCK_SIZE * 0.5 * scale_pos
+	
+	# set block
+	for i in 2:
+		var parent_block := Node.new()
+		parent_block.set_name("block_parent_%d" % i)
+		root.add_child.call_deferred(parent_block)
+		var player_offset := i * center_x + HALF_BLOCK_SIZE * scale_pos
+		for x in collums:
+			for y in rows:
+				var block: Block = BLOCK_SCENE.instantiate()
+				var x_pos := x * BLOCK_SIZE * scale_pos + player_offset
+				var y_pos := y * BLOCK_SIZE * scale_pos + HALF_BLOCK_SIZE * scale_pos
+				block.position = Vector2(x_pos, y_pos)
+				block.scale = Vector2(block_scale, block_scale)
+				block.set_layer(i)
+				block.set_name("block_%d_%d" % [i, x * collums + y])
+				block.hit.connect(flip_block)
+				
+				all_blocks[i].append(block)
+				
+				parent_block.add_child.call_deferred(block)
+		
+		main_ui.set_score(i, all_blocks[i].size())
+	
+	# camera zoom
+	var block_width := center_x * 2.0
+	var block_height := center_y * 2.0
+	var viewport: Vector2i = get_viewport().get_size()
+	var zoom_x := viewport.x / (block_width * (sides_padding_percent + 1))
+	var size_y := block_height * (tops_padding_percent + 1)
+	var zoom_y := viewport.y / size_y
+	var zoom := zoom_x if zoom_y > zoom_x else zoom_y
+	camera_2d.zoom = Vector2(zoom, zoom)
+	
+	# set camera pos
+	var camera_pos_y := center_y + (camera_offset_y / zoom)
+	camera_2d.position = Vector2(center_x, camera_pos_y)
+	
+	# set edge colliders
+	var points := [
+			center_x, 0.0, # Top 
+			block_width, center_y, # Right
+			center_x, block_height, # Bot 
+			0.0, center_y] # left
+	
+	for i in edge_colliders.size():
+		var i_point := i * 2
+		edge_colliders[i].position = Vector2(points[i_point], points[i_point + 1])
 
 
 func spawn_ball(num: int, index: int, pos: Vector2) -> void:
