@@ -117,7 +117,7 @@ func _input(event: InputEvent) -> void:
 				.replace("-", "_").replace(":", "_").replace("T", "_")
 		image.save_png(path)
 
-# This also repositions the camera and the edge colliders
+# This also repositions the camera and the edge colliders and replace the balls
 func place_blocks() -> void:
 	# init variables
 	scale_pos = 1.0 if !scale_position else block_scale
@@ -171,7 +171,6 @@ func place_blocks() -> void:
 	for i in edge_colliders.size():
 		var i_point := i * 2
 		edge_colliders[i].position = Vector2(points[i_point], points[i_point + 1])
-		
 	
 	place_balls()
 
