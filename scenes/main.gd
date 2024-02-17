@@ -34,7 +34,10 @@ signal redraw_blocks()
 
 @export_group("Ball Settings")
 const BALL_SCENE: PackedScene = preload("res://scenes/ball.tscn")
-@export var ball_amount: int = 1
+@export var ball_amount: int = 1:
+	set(value):
+		ball_amount = value
+		place_balls()
 @export var ball_start_force: float = 2048
 @export var ball_scale: float = .5
 var parents_ball: Array[Node]
@@ -68,9 +71,14 @@ var center_y: float
 func _ready() -> void:
 	RenderingServer.set_default_clear_color(background_colour)
 	
-	place_blocks()
-	
+	parent_ball_hit_particle = Node.new()
+	parent_ball_hit_particle.set_name("parent_ball_hit_particle")
+	root.add_child.call_deferred(parent_ball_hit_particle)
 	for i in 2:
+		# Spawn ball hit particles
+		for _i in ball_amount:
+			spawn_ball_hit_particle()
+		
 		# ball parents
 		var parent_ball := Node.new()
 		parent_ball.set_name("parent_ball_%d" % i)
@@ -85,46 +93,7 @@ func _ready() -> void:
 		g.set_color(1, colours[i])
 		trail_gradients.append(g)
 	
-	# set balls
-	var ball_padding := BLOCK_SIZE * scale_pos
-	var nearest_sqrt := pow(ceil(sqrt(ball_amount)), 2.0)
-	# TODO: in the future it would be nice to have a grid that is not just squared,
-	# One that respects the size of the ball area (collums & rows)
-	var amount_of_colls := int(sqrt(nearest_sqrt))
-	var amount_per_col := amount_of_colls
-	var remainder := ball_amount % amount_per_col
-	var amount_of_rows := floori(float(ball_amount) / amount_per_col)
-	
-	var center_x_1 := center_x * 0.5
-	var min_x_1 := center_x_1 - ((amount_per_col - 1) / 2.0 * ball_padding)
-	var min_y := center_y + ((amount_of_rows - 1) / 2.0 * ball_padding)
-	
-	if remainder > 0:
-		min_y += ball_padding * .5
-	
-	for x in amount_per_col:
-		for y in amount_of_rows:
-			var x_pos := min_x_1 + (ball_padding * x)
-			var y_pos := min_y - (ball_padding * y)
-			var num := x * amount_per_col + y
-			spawn_ball(num, 0, Vector2(x_pos, y_pos))
-			spawn_ball(num, 1, Vector2(x_pos + center_x, y_pos))
-	
-	var x_max_2 := min_x_1 + (ball_padding * remainder) + center_x
-	var spawned := (amount_per_col - 1) * amount_per_col + amount_of_rows
-	var y_ball_remainder_pos := min_y - (ball_padding * amount_of_rows)
-	for r in remainder:
-		var x_pos := min_x_1 + (ball_padding * r)
-		var num := spawned + r
-		spawn_ball(num, 0, Vector2(x_pos, y_ball_remainder_pos))
-		spawn_ball(num, 1, Vector2(x_max_2 - (ball_padding * r), y_ball_remainder_pos))
-	
-	# Spawn ball hit particles
-	parent_ball_hit_particle = Node.new()
-	parent_ball_hit_particle.set_name("ball_hit_particle_parent")
-	root.add_child.call_deferred(parent_ball_hit_particle)
-	for i in 11 * amount_of_rows:
-		spawn_ball_hit_particle()
+	place_blocks()
 
 
 func _draw() -> void:
@@ -202,6 +171,44 @@ func place_blocks() -> void:
 	for i in edge_colliders.size():
 		var i_point := i * 2
 		edge_colliders[i].position = Vector2(points[i_point], points[i_point + 1])
+		
+	
+	place_balls()
+
+
+func place_balls() -> void:
+		# set balls
+	var ball_padding := BLOCK_SIZE * scale_pos
+	var nearest_sqrt := pow(ceil(sqrt(ball_amount)), 2.0)
+	# TODO: in the future it would be nice to have a grid that is not just squared,
+	# One that respects the size of the ball area (collums & rows)
+	var amount_per_col := int(sqrt(nearest_sqrt))
+	var remainder := ball_amount % amount_per_col
+	var amount_of_rows := floori(float(ball_amount) / amount_per_col)
+	
+	var center_x_1 := center_x * 0.5
+	var min_x_1 := center_x_1 - ((amount_per_col - 1) / 2.0 * ball_padding)
+	var min_y := center_y + ((amount_of_rows - 1) / 2.0 * ball_padding)
+	
+	if remainder > 0:
+		min_y += ball_padding * .5
+	
+	for x in amount_per_col:
+		for y in amount_of_rows:
+			var x_pos := min_x_1 + (ball_padding * x)
+			var y_pos := min_y - (ball_padding * y)
+			var num := x * amount_per_col + y
+			spawn_ball(num, 0, Vector2(x_pos, y_pos))
+			spawn_ball(num, 1, Vector2(x_pos + center_x, y_pos))
+	
+	var x_max_2 := min_x_1 + (ball_padding * remainder) + center_x
+	var spawned := (amount_per_col - 1) * amount_per_col + amount_of_rows
+	var y_ball_remainder_pos := min_y - (ball_padding * amount_of_rows)
+	for r in remainder:
+		var x_pos := min_x_1 + (ball_padding * r)
+		var num := spawned + r
+		spawn_ball(num, 0, Vector2(x_pos, y_ball_remainder_pos))
+		spawn_ball(num, 1, Vector2(x_max_2 - (ball_padding * r), y_ball_remainder_pos))
 
 
 func spawn_ball(num: int, index: int, pos: Vector2) -> void:
