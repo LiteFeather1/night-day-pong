@@ -124,6 +124,13 @@ func place_blocks() -> void:
 	center_x = collums * BLOCK_SIZE * scale_pos
 	center_y = rows * BLOCK_SIZE * 0.5 * scale_pos
 	
+	process_mode = Node.PROCESS_MODE_DISABLED
+	for p in all_blocks:
+		for b in p:
+			b.queue_free()
+		p.clear()
+	process_mode = Node.PROCESS_MODE_INHERIT
+	
 	# set block
 	for i in 2:
 		var parent_block := Node.new()
@@ -171,7 +178,7 @@ func place_blocks() -> void:
 	for i in edge_colliders.size():
 		var i_point := i * 2
 		edge_colliders[i].position = Vector2(points[i_point], points[i_point + 1])
-	
+	redraw_blocks.emit()
 	place_balls()
 
 

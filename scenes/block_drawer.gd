@@ -34,8 +34,6 @@ func _draw() -> void:
 				
 				draw_rect(Rect2(block.position.x - offset, block.position.y - offset, 
 						block_size, block_size), colour)
-	
-	print(type_string(typeof(range(0))))
 
 
 func get_range(index: int) -> Array:
