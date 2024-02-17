@@ -183,7 +183,12 @@ func place_blocks() -> void:
 
 
 func place_balls() -> void:
-		# set balls
+	for p in balls:
+		for b in p:
+			b.queue_free()
+		p.clear()
+	
+	# set balls
 	var ball_padding := BLOCK_SIZE * scale_pos
 	var nearest_sqrt := pow(ceil(sqrt(ball_amount)), 2.0)
 	# TODO: in the future it would be nice to have a grid that is not just squared,
