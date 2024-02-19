@@ -20,10 +20,14 @@ signal redraw_blocks()
 @export_group("Game Settings")
 @export var collums: int = 8:
 	set(value):
+		if value < 1:
+			value = 1
 		collums = value
 		place_blocks()
 @export var rows: int = 8:
 	set(value):
+		if value < 1:
+			value = 1
 		rows = value
 		place_blocks()
 
@@ -36,6 +40,8 @@ signal redraw_blocks()
 const BALL_SCENE: PackedScene = preload("res://scenes/ball.tscn")
 @export var ball_amount: int = 1:
 	set(value):
+		if value < 1:
+			value = 1
 		ball_amount = value
 		place_balls()
 @export var ball_start_force: float = 2048
@@ -116,6 +122,16 @@ func _input(event: InputEvent) -> void:
 		var path := "Screenshots/screenshot_%s.png" % Time.get_datetime_string_from_system() \
 				.replace("-", "_").replace(":", "_").replace("T", "_")
 		image.save_png(path)
+
+
+func start_game() -> void:
+	for p in balls:
+		for b: Ball in p:
+			var theta := randf() * TAU
+			var random_inside_unit_circle := Vector2(cos(theta), sin(theta)) * sqrt(randf())
+			b.launch(random_inside_unit_circle.normalized() * ball_start_force)
+	
+	process_mode = Node.PROCESS_MODE_INHERIT
 
 # This also repositions the camera and the edge colliders and replace the balls
 func place_blocks() -> void:
@@ -230,9 +246,6 @@ func spawn_ball(num: int, index: int, pos: Vector2) -> void:
 	ball.trail.set_state(show_ball_trail)
 	ball.set_pos_scale(pos, ball_scale - (ball_scale * 0.05))
 	ball.on_hit.connect(on_ball_hit)
-	var theta := randf() * TAU
-	var random_inside_unit_circle := Vector2(cos(theta), sin(theta)) * sqrt(randf())
-	ball.launch(random_inside_unit_circle.normalized() * ball_start_force)
 	balls[index].append(ball)
 	parents_ball[index].add_child.call_deferred(ball)
 

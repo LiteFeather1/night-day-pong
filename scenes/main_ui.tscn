@@ -5,12 +5,23 @@
 [sub_resource type="FontVariation" id="FontVariation_f2thi"]
 spacing_glyph = 2
 
-[node name="MainUI" type="CanvasLayer" node_paths=PackedStringArray("l_time", "l_scores")]
+[node name="MainUI" type="CanvasLayer" node_paths=PackedStringArray("hud", "l_time", "l_scores", "b_start")]
 script = ExtResource("1_uqk28")
-l_time = NodePath("VBoxContainer/HBoxContainer/ColorRect/l_timer")
-l_scores = [NodePath("VBoxContainer2/HBoxContainer/ColorRect/l_score_1"), NodePath("VBoxContainer2/HBoxContainer/ColorRect2/l_score_2")]
+hud = NodePath("HUD")
+l_time = NodePath("HUD/VBoxContainer/HBoxContainer/ColorRect/l_timer")
+l_scores = [NodePath("HUD/VBoxContainer2/HBoxContainer/ColorRect/l_score_1"), NodePath("HUD/VBoxContainer2/HBoxContainer/ColorRect2/l_score_2")]
+b_start = NodePath("b_start")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="HUD" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HUD"]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -18,21 +29,21 @@ grow_horizontal = 2
 grow_vertical = 2
 metadata/_edit_use_anchors_ = true
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer"]
+[node name="HSeparator" type="HSeparator" parent="HUD/VBoxContainer"]
 layout_mode = 2
 theme_override_constants/separation = 16
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD/VBoxContainer"]
 custom_minimum_size = Vector2(0, 32)
 layout_mode = 2
 alignment = 1
 
-[node name="ColorRect" type="ColorRect" parent="VBoxContainer/HBoxContainer"]
+[node name="ColorRect" type="ColorRect" parent="HUD/VBoxContainer/HBoxContainer"]
 custom_minimum_size = Vector2(128, 0)
 layout_mode = 2
 color = Color(0.180392, 0.180392, 0.180392, 1)
 
-[node name="l_timer" type="Label" parent="VBoxContainer/HBoxContainer/ColorRect"]
+[node name="l_timer" type="Label" parent="HUD/VBoxContainer/HBoxContainer/ColorRect"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -46,7 +57,8 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="VBoxContainer2" type="VBoxContainer" parent="."]
+[node name="VBoxContainer2" type="VBoxContainer" parent="HUD"]
+layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -54,18 +66,18 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="VBoxContainer2"]
+[node name="HBoxContainer" type="HBoxContainer" parent="HUD/VBoxContainer2"]
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 theme_override_constants/separation = 32
 alignment = 1
 
-[node name="ColorRect" type="ColorRect" parent="VBoxContainer2/HBoxContainer"]
+[node name="ColorRect" type="ColorRect" parent="HUD/VBoxContainer2/HBoxContainer"]
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 color = Color(0.180392, 0.180392, 0.180392, 1)
 
-[node name="l_score_1" type="Label" parent="VBoxContainer2/HBoxContainer/ColorRect"]
+[node name="l_score_1" type="Label" parent="HUD/VBoxContainer2/HBoxContainer/ColorRect"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -83,12 +95,12 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="ColorRect2" type="ColorRect" parent="VBoxContainer2/HBoxContainer"]
+[node name="ColorRect2" type="ColorRect" parent="HUD/VBoxContainer2/HBoxContainer"]
 custom_minimum_size = Vector2(64, 0)
 layout_mode = 2
 color = Color(0.180392, 0.180392, 0.180392, 1)
 
-[node name="l_score_2" type="Label" parent="VBoxContainer2/HBoxContainer/ColorRect2"]
+[node name="l_score_2" type="Label" parent="HUD/VBoxContainer2/HBoxContainer/ColorRect2"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -104,6 +116,16 @@ horizontal_alignment = 1
 vertical_alignment = 1
 clip_text = true
 
-[node name="HSeparator" type="HSeparator" parent="VBoxContainer2"]
+[node name="HSeparator" type="HSeparator" parent="HUD/VBoxContainer2"]
 layout_mode = 2
 theme_override_constants/separation = 16
+
+[node name="b_start" type="Button" parent="."]
+offset_left = 584.0
+offset_top = 642.0
+offset_right = 695.0
+offset_bottom = 700.0
+theme_override_font_sizes/font_size = 36
+text = " Start "
+
+[connection signal="pressed" from="b_start" to="." method="_on_b_start_pressed"]

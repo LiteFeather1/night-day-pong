@@ -20,6 +20,7 @@ normal = Vector2(-1, 0)
 normal = Vector2(1, 0)
 
 [node name="Main" type="Node2D" node_paths=PackedStringArray("camera_2d", "main_ui", "edge_colliders")]
+process_mode = 4
 script = ExtResource("1_w6ri1")
 camera_2d = NodePath("Camera2D")
 main_ui = NodePath("MainUI")
@@ -33,6 +34,7 @@ script = ExtResource("3_m2v8j")
 main = NodePath("..")
 
 [node name="MainUI" parent="." instance=ExtResource("3_3thpt")]
+process_mode = 3
 
 [node name="edge_collider" type="StaticBody2D" parent="."]
 collision_layer = 15
@@ -54,3 +56,4 @@ shape = SubResource("WorldBoundaryShape2D_cjuud")
 position = Vector2(640, 360)
 
 [connection signal="redraw_blocks" from="." to="block_drawer" method="redraw"]
+[connection signal="start_game" from="MainUI" to="." method="start_game"]
