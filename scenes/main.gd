@@ -18,18 +18,8 @@ signal redraw_blocks()
 @export var edge_colliders: Array[CollisionShape2D]
 
 @export_group("Game Settings")
-@export var collums: int = 8:
-	set(value):
-		if value < 1:
-			value = 1
-		collums = value
-		place_blocks()
-@export var rows: int = 8:
-	set(value):
-		if value < 1:
-			value = 1
-		rows = value
-		place_blocks()
+@export var collums: int = 8
+@export var rows: int = 8
 
 @export_group("Colours")
 @export var colours: Array[Color]
@@ -38,12 +28,7 @@ signal redraw_blocks()
 
 @export_group("Ball Settings")
 const BALL_SCENE: PackedScene = preload("res://scenes/ball.tscn")
-@export var ball_amount: int = 1:
-	set(value):
-		if value < 1:
-			value = 1
-		ball_amount = value
-		place_balls()
+@export var ball_amount: int = 1
 @export var ball_start_force: float = 2048
 @export var ball_scale: float = .5
 var parents_ball: Array[Node]
@@ -195,7 +180,9 @@ func place_blocks() -> void:
 	for i in edge_colliders.size():
 		var i_point := i * 2
 		edge_colliders[i].position = Vector2(points[i_point], points[i_point + 1])
+	
 	redraw_blocks.emit()
+	
 	place_balls()
 
 
@@ -220,23 +207,26 @@ func place_balls() -> void:
 	
 	if remainder > 0:
 		min_y += ball_padding * .5
-	
-	for x in amount_per_col:
-		for y in amount_of_rows:
-			var x_pos := min_x_1 + (ball_padding * x)
-			var y_pos := min_y - (ball_padding * y)
-			var num := x * amount_per_col + y
-			spawn_ball(num, 0, Vector2(x_pos, y_pos))
-			spawn_ball(num, 1, Vector2(x_pos + center_x, y_pos))
-	
-	var x_max_2 := min_x_1 + (ball_padding * remainder) + center_x
+
 	var spawned := (amount_per_col - 1) * amount_per_col + amount_of_rows
 	var y_ball_remainder_pos := min_y - (ball_padding * amount_of_rows)
-	for r in remainder:
-		var x_pos := min_x_1 + (ball_padding * r)
-		var num := spawned + r
-		spawn_ball(num, 0, Vector2(x_pos, y_ball_remainder_pos))
-		spawn_ball(num, 1, Vector2(x_max_2 - (ball_padding * r), y_ball_remainder_pos))
+	for i in 2:
+		for x in amount_per_col:
+			for y in amount_of_rows:
+				var player_offset := center_x * i
+				spawn_ball(
+					x * amount_per_col + y, 
+					i,
+					Vector2(min_x_1 + (ball_padding * x) + player_offset,
+					min_y - (ball_padding * y)))
+		
+		for r in remainder:
+			var player_offset := ((ball_padding * remainder) + center_x) * i
+			spawn_ball(
+				spawned + r, 
+				i,
+				Vector2(min_x_1 + (ball_padding * r) + player_offset, 
+				y_ball_remainder_pos))
 
 
 func spawn_ball(num: int, index: int, pos: Vector2) -> void:

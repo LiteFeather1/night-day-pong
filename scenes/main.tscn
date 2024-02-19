@@ -20,12 +20,12 @@ normal = Vector2(-1, 0)
 normal = Vector2(1, 0)
 
 [node name="Main" type="Node2D" node_paths=PackedStringArray("camera_2d", "main_ui", "edge_colliders")]
-process_mode = 4
 script = ExtResource("1_w6ri1")
 camera_2d = NodePath("Camera2D")
 main_ui = NodePath("MainUI")
 edge_colliders = [NodePath("edge_collider/collision_shape_top"), NodePath("edge_collider/collision_shape_right"), NodePath("edge_collider/collision_shape_bot"), NodePath("edge_collider/collision_shape_left")]
 colours = Array[Color]([Color(0.265, 0.313583, 0.53, 1), Color(0.78, 0.5434, 0.273, 1)])
+ball_amount = 3
 gradient_ball_trail = SubResource("Gradient_plf0e")
 
 [node name="block_drawer" type="Node2D" parent="." node_paths=PackedStringArray("main")]
