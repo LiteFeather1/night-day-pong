@@ -169,6 +169,7 @@ func place_blocks() -> void:
 				parent_block.add_child.call_deferred(block)
 		
 		main_ui.set_score(i, all_blocks[i].size())
+		main_ui.set_score_colour(i, colours[i])
 	
 	# camera zoom
 	var block_width := center_x * 2.0

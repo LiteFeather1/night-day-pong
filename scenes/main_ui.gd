@@ -31,6 +31,10 @@ func set_score(index: int, score: int) -> void:
 	l_scores[index].set_text("%d" % score)
 
 
+func set_score_colour(index: int, colour: Color) -> void:
+	l_scores[index].modulate = colour
+
+
 func _on_b_start_pressed() -> void:
 	b_start.disabled = true
 	var tween: Tween = create_tween()
