@@ -38,11 +38,16 @@ func set_score_colour(index: int, colour: Color) -> void:
 func _on_b_start_pressed() -> void:
 	b_start.disabled = true
 	var tween: Tween = create_tween()
-	tween.tween_property(b_start, "modulate", Color(1.0, 1.0, 1.0, 0.0), 0.2).set_ease(Tween.EASE_IN_OUT)
+	tween.tween_property(b_start, "modulate", Color(1.0, 1.0, 1.0, 0.0), 0.2) \
+		.set_ease(Tween.EASE_OUT) \
+		.set_trans(Tween.TRANS_QUINT)
 	const delay := .05
 	tween.tween_callback(func(): 
 		b_start.visible = false
 		hud.visible = true).set_delay(delay)
-	tween.tween_property(hud, "modulate", Color.WHITE, .33).set_delay(delay)
+	tween.tween_property(hud, "modulate", Color.WHITE, .33) \
+		.set_delay(delay) \
+		.set_ease(Tween.EASE_IN) \
+		.set_trans(Tween.TRANS_CIRC)
 	
 	start_game.emit()
